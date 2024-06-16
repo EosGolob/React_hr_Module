@@ -5,6 +5,8 @@ import EducationalDetailsComponent from "./EducationalDetailsComponent";
 import AdditionalDetailsComponent from "./AdditionalDetailsComponent";
 import { creatEmployee } from "../services/EmployeeService";
 import '../components/EmployeeCreatePageComponent.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const EmployeeCreatePageComponent = () => {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -44,17 +46,69 @@ const EmployeeCreatePageComponent = () => {
     source: "",
     subSource: "",
     language: "",
-    experience: ""
+    experience: "",
+    aadhaarNumber:""
   });
   const [currentPage, setCurrentPage] = useState(1);
 
+  // const handleChange = (field, value) => {
+  //   setFormData((prevFormData) => ({
+  //     ...prevFormData,
+  //     [field]: value,
+  //   }));
+  //   if (!value.trim()) {
+  //     setErrors((prevErrors) => ({
+  //       ...prevErrors,
+  //       [field]: `${field} is required`,
+  //     }));
+  //   }else{
+  //   setErrors((prevErrors) => ({
+  //     ...prevErrors,
+  //     [field]: "",
+  //   }));
+  // }
+  // };
   const handleChange = (field, value) => {
+    // Validate the field and set error message
+    // if (!value) {
+    //   setErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     [field]: `${field} is required`,
+    //   }));
+    // } else {
+    //   setErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     [field]: "",
+    //   }));
+    // }
+    let errorMessage = "";
+    switch (field) {
+      case "email":
+        errorMessage = validateEmail(value) ? "" : "Invalid email format";
+        break;
+      case "mobileNo":
+        errorMessage = validatePhoneNumber(value) ? "" : "Invalid phone number format";
+        break;
+      case "aadhaarNumber":
+        errorMessage = validateAadhaar(value) ? "" : "Invalid Aadhaar number format";
+        break;
+      case "dob":
+        errorMessage = validateDOB(value) ? "" : "Date of birth cannot be in the future";
+        break;
+      default:
+        errorMessage = "";
+    }
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: errorMessage,
+    }));
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       [field]: value,
     }));
   };
-
+  
   const nextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
@@ -63,6 +117,26 @@ const EmployeeCreatePageComponent = () => {
     setCurrentPage((prevPage) => prevPage - 1);
   };
 
+  // const saveEmployee = () => {
+  //   const formDataToSend = new FormData();
+  //   formDataToSend.append("employee", new Blob([JSON.stringify(formData)], { type: "application/json" }));
+  //   formDataToSend.append("image", formData.file);
+  
+  //   creatEmployee(formDataToSend, {
+  //     headers: {
+  //       'Content-Type': 'multipart/form-data', 
+  //     },
+  //   })
+  //     .then((response) => {
+  //       console.log(response.data);
+  //       toast.success("Employee created successfully!");
+
+  //     })
+  //     .catch((errors) => {
+  //       console.error(errors);
+  //     });
+  // };
+ 
   const saveEmployee = () => {
     const formDataToSend = new FormData();
     formDataToSend.append("employee", new Blob([JSON.stringify(formData)], { type: "application/json" }));
@@ -70,16 +144,76 @@ const EmployeeCreatePageComponent = () => {
   
     creatEmployee(formDataToSend, {
       headers: {
-        'Content-Type': 'multipart/form-data', // Do not set the boundary, it will be set automatically by the browser
+        'Content-Type': 'multipart/form-data',
       },
     })
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((errors) => {
-        console.error(errors);
+    .then((response) => {
+      console.log(response.data);
+      // Show success toast
+      toast.success("Employee created successfully!");
+      // Reset the form
+      setFormData({
+        fullName: "",
+        email: "",
+        jobProfile: "",
+        qualification: "",
+        mobileNo: "",
+        permanentAddress: "",
+        currentAddress: "",
+        gender: "",
+        previousOrganisation: "",
+        dob: null,
+        maritalStatus: "",
+        refferal: "",
+        year: new Date().getFullYear(),
+        file: null,
+        source: "",
+        subSource: "",
+        language: "",
+        experience: "",
+        aadhaarNumber:"",
       });
-  };
+      setCurrentPage(1); // Reset to the first page
+    }).catch((errors) => {
+    console.error(errors);
+    if (errors.response) {
+      const responseData = errors.response.data;
+      if (responseData && responseData.message) {
+        const errorMessage = responseData.message;
+        if (errorMessage.includes("Email") && errorMessage.includes("Aadhaar")) {
+          // Both email and Aadhaar are not unique
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            email: "Email is already registered",
+            aadhaarNumber: "Aadhaar number is already registered",
+          }));
+          // Show error toast for both non-unique email and Aadhaar
+          toast.error("Failed to create employee. Email and Aadhaar number are already registered.");
+        } else if (errorMessage.includes("Email")) {
+          // Only email is not unique
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            email: "Email is already registered",
+          }));
+          // Show error toast for non-unique email
+          toast.error("Failed to create employee. Email is already registered.");
+        } else if (errorMessage.includes("aadhaarNumber")) {
+          // Only Aadhaar is not unique
+          setErrors((prevErrors) => ({
+            ...prevErrors,
+            aadhaarNumber: "Aadhaar number is already registered",
+          }));
+          // Show error toast for non-unique Aadhaar
+          toast.error("Failed to create employee. Aadhaar number is already registered.");
+        } else {
+          // Handle other errors if needed
+          toast.error("Failed to create employee. Please try again.");
+        }
+      }
+    }
+  });
+};
+  
     const handleDateChange = (date) => {
     if (date) {
       const updatedDate = new Date(date);
@@ -136,8 +270,32 @@ const EmployeeCreatePageComponent = () => {
       subSource: e.target.value,
     }));
   };
+
+  const validateEmail = (email) => {
+    // Implement email validation logic
+    return /\S+@\S+\.\S+/.test(email);
+  };
+
+  const validatePhoneNumber = (phoneNumber) => {
+    // Implement phone number validation logic
+    return /^\d{10}$/.test(phoneNumber);
+  };
+
+  const validateAadhaar = (aadhaarNumber) => {
+    // Implement Aadhaar number validation logic
+    return /^\d{12}$/.test(aadhaarNumber);
+  };
+
+  const validateDOB = (dob) => {
+    // Implement DOB validation logic
+    const currentDate = new Date();
+    const selectedDate = new Date(dob);
+    return selectedDate < currentDate;
+  };
+
   return (
     <div>
+        <ToastContainer />
       {currentPage === 1 && (
         <PersonalDetailsComponent
           formData={formData}
@@ -168,12 +326,12 @@ const EmployeeCreatePageComponent = () => {
       <div className="button-container">
 
       {currentPage > 1 && (
-        <button  onClick={previousPage}>Previous</button>
+        <button className="btn btn-secondary mx-2" onClick={previousPage}>Previous</button>
       )}
       {currentPage < 3 ? (
-        <button onClick={nextPage}>Next</button>
+        <button className="btn btn-secondary mx-2" onClick={nextPage}>Next</button>
       ) : (
-        <button onClick={saveEmployee}>Submit</button>
+        <button className="btn btn-secondary mx-2" onClick={saveEmployee}>Submit</button>
       )}
     </div>
     </div>

@@ -13,7 +13,7 @@ const AdditionalDetailsComponent = ({
       <div className="row">
         <div className="card col-md-6 offset-md-3 offset-md-3">
           <div className="card-body">
-            <h2>ADDITIONAL DETAILS</h2>
+            <h2  className="text-center">ADDITIONAL DETAILS</h2>
             <form>
               <div className="form-group">
                 <label className="form-label">Job Profile</label>

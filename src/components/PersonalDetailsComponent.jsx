@@ -12,17 +12,17 @@ const PersonalDetailsComponent = ({
 }) => {
   return (
     <div className="container">
-      <br></br>
+      <br/>
       <div className="row">
         <div className="card col-md-6 offset-md-3 offset-md-3">
           <div className="card-body">
-            <h2>PERSIONAL DETAILS</h2>
+            <h2 className="text-center">PERSIONAL DETAILS</h2>
             <form>
               <div className="form-group">
                 <label className="form-label">Full Name</label>
                 <input
                   type="text"
-                  placeholder="Enter Full Name"
+                  placeholder="Enter your full Name"
                   className={`form-control ${
                     errors.fullName ? "is-invalid" : ""
                   }`}
@@ -73,9 +73,9 @@ const PersonalDetailsComponent = ({
                   <option value="" disabled>
                     Select Gender
                   </option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
+                  <option value="MALE">MALE</option>
+                  <option value="FEMALE">FEMALE</option>
+                  <option value="OTHER">OTHER</option>
                 </select>
                 {errors.gender && (
                   <div className="invalid-feedback">{errors.gender}</div>
@@ -105,17 +105,19 @@ const PersonalDetailsComponent = ({
               </div>
               <div className="form-group">
                 <label className="form-label">Marital Status</label>
-                <input
-                  type="text"
-                  placeholder="Enter Marital status"
+                <select
                   className={`form-control ${
                     errors.maritalStatus ? "is-invalid" : ""
                   }`}
                   value={formData.maritalStatus}
-                  onChange={(e) =>
-                    handleChange("maritalStatus", e.target.value)
-                  }
-                />
+                  onChange={(e) => handleChange("maritalStatus", e.target.value)}
+                >
+                  <option value="" disabled>
+                    Marital Status
+                  </option>
+                  <option value="Single">Single</option>
+                  <option value="Married">Married</option>
+                </select>
                 {errors.maritalStatus && (
                   <div className="invalid-feedback">{errors.maritalStatus}</div>
                 )}

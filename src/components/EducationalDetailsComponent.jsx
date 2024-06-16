@@ -7,7 +7,7 @@ const EducationalDetailsComponent = ({ formData, errors, handleChange }) => {
       <div className="row">
         <div className="card col-md-6 offset-md-3 offset-md-3">
           <div className="card-body">
-            <h2>EDUCATIONAL DETAILS</h2>
+            <h2  className="text-center">EDUCATIONAL DETAILS</h2>
             <form>
               <div className="form-group">
                 <label className="form-label">Qualification</label>

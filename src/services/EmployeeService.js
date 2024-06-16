@@ -2,6 +2,7 @@ import axios from "axios";
 
 const  REST_API_BASE_URL = 'http://localhost:8080/api/employees';
 const INTERVIEW_API_BASE_URL = 'http://localhost:8080/api/interviews';
+const endpoint = 'employees-schedule-interview';
 
 export const listEmployees = () => axios.get(REST_API_BASE_URL);
 export const creatEmployee = (employee) => axios.post(REST_API_BASE_URL,employee);
@@ -21,17 +22,18 @@ export const scheduleInterview = (employeeId, interviewDetails) => {
 export const listInterviewsByEmployeeId = (employeeId) => {
   return axios.get(`${INTERVIEW_API_BASE_URL}/${employeeId}/interviews`);
 };
-export const creatEmployee2 = (employeeDto) => {
-  const formData = new FormData();
-  // formData.append(
-  //   "image",
-  //   new Blob([JSON.stringify(employeeDto)], { type: "application/json" })
-  // );
-  formData.append("image", new Blob([JSON.stringify(employeeDto)], { type: "application/json" }));
 
-  return axios.post(REST_API_BASE_URL, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+export const selectInterviewProcess = (employeeId, interviewData) => {
+  return axios.post(`${REST_API_BASE_URL}/${employeeId}/interview-process`, interviewData);
 };
+export const getlistOfEmpIntSchedule = () => axios.get(REST_API_BASE_URL+'/'+ endpoint);
+
+//export const hrResponseSubmit = (employeeId, newStatus) => axios.put(`${REST_API_BASE_URL}/${employeeId}/hrResponse`, null, { params: { newStatus: newStatus } });
+
+export const hrResponseSubmit = (employeeId, newStatus) => {
+  const url = `${REST_API_BASE_URL}/${employeeId}/hrResponse`;
+  return axios.put(url, { newStatus: newStatus });
+};
+
+
+ 
