@@ -5,6 +5,8 @@ const hdfcendpoint = 'managerHdfcResponeField';
 const iciciendpoint = 'managerIciciResponeField';
 const misendpoint   ='managerMisResponeField';
 const empDetailsInfoEndpoint = 'empDetailsInfo';
+const approvedendpoint   = 'approvedEmpdetails';
+const rejectedEmpdetails = 'rejectedEmpdetails';
 
 const axiosInstance = axios.create({
     baseURL: REST_API_BASE_URL,
@@ -52,10 +54,16 @@ const axiosInstance = axios.create({
   export const getlistOfManagerMisResponeField = () => {
     return axiosInstance.get(`/${misendpoint}`, authConfig());
   };
+  export const getlistOfApprovedEmpList = () =>{
+    return axiosInstance.get(`/${approvedendpoint}`, authConfig());
+  }
+  export const getlistOfRejectedEmpList = () => {
+    return axiosInstance.get(`/${rejectedEmpdetails}`, authConfig());
+  }
   export const getEmployeeDetails = (employeeId) => {
     return axiosInstance.get(`/${empDetailsInfoEndpoint}/${employeeId}`, authConfig());
   };
-
+  
   export const MrResponseSubmit = (employeeId, selectedResponse) => {
     const url = `${REST_API_BASE_URL}/${employeeId}/mRResponse`;
     const data = { newStatus: selectedResponse };

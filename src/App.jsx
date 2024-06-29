@@ -20,7 +20,13 @@ import FooterComponent from './components/common/Footer'
 import HdfcMrResponsePage from './components/HDFCMRPAGE/HdfcMrResponsePage'
 import IciciMrResponePage from './components/ICICMRPAGE/IcisMrResponsePage'
 import MisResponsePage  from './components/MISMRPAGE/MisMrResponsePage'
+import ApprovedStatusPage from './components/approvedEmpPage/ApprovedStatusPage'
+import RejectedStatusPage from './components/rejectedEmpPage/RejectedStatusPage'
+
+
+import * as RoleUtils from './RoleUtils';
 function App() {
+
 
   return (
     <>
@@ -51,7 +57,8 @@ function App() {
                   <Route path='/process-Selection' element={<EmployeeProcessSelection />}/>
                   {/* <Route path="/register" element={<RegistrationPage />} /> */}
                   <Route path="/admin/user-management" element={<UserManagementPage />} />
-                 
+                  <Route path = "/approved" element={<ApprovedStatusPage/>}/>
+                  <Route path = '/rejected' element={<RejectedStatusPage/>}/>
                   <Route path="/admin/process-Selection" element={<EmployeeProcessSelection />}></Route>
                   <Route path="/update-user/:userId" element={<UpdateUser />} />
                 </>
@@ -87,6 +94,7 @@ function App() {
       </BrowserRouter>
     </>
   );
+
 }
 
 export default App
