@@ -116,7 +116,10 @@ class UsersService{
         const role =  localStorage.getItem('role') 
         return role === 'ADMIN'
     }
-
+    static getRole() {
+        return localStorage.getItem('role');
+    }
+    
     static isUser(){
         const role =  localStorage.getItem('role') 
         return role === 'USER'

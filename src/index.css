@@ -1,23 +1,33 @@
 
 /* NAVBAR STYLING */
 
-*{
-  margin: 0;
+  .navbar {
+    background-color: #f2f2f2;
+    padding: 20px;
+    font-size: 15px;
+    /* font-weight: 600; */
+    font-family: Cambria;
   }
-  
   .link-button {
   background-color: rgb(217, 217, 224);
-  color: white;
-  padding: 10px;
+  color: black;
+  padding: 10px 15px;
   border-radius: 5px;
   text-decoration: none;
+  display: inline-block;
+
+  transition: background-color 0.3s ease;
   }
   
+
+.link-button:hover {
+  /* background-color: #555; */
+}
   nav {
-  background-color:black;
+  /* background-color:#f2f2f2; */
   padding: 10px 0;
   padding: 20px;
-  font-size: 20px;
+  font-size: 10px;
   font-weight: 600;
   }
   
@@ -26,26 +36,44 @@
   padding: 0;
   margin: 0;
   text-align: center;
+  border-radius: 5px;
   }
   
   li {
   display: inline-block;
   margin: 0 10px;
+  /* color: #fff; */
   }
   
-  a {
+
+  li a {
+    color: #fff; /* This will override the global 'a' tag color */
+    text-decoration: none;
+    display: inline-block;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-family: 'Arial', sans-serif; 
+  }
+
+  li a:hover {
+    background-color: cornflowerblue;
+  }
+
+
+  /* a {
   color: #fff;
   text-decoration: none;
   padding: 10px 15px;
   border-radius: 5px;
   transition: background-color 0.3s ease;
-  }
+  display: block;
+  } */
   
-  a:hover {
+  /* a:hover {
   background-color: #555;
-  }
+  } */
   
-  @media only screen and (max-width: 600px) {
+  @media only screen and (max-width: 200px) {
   nav {
   padding: 5px 0;
   }
@@ -53,13 +81,22 @@
   li {
   display: block;
   margin: 10px 0;
-  }
+    }
   }
   
+  .navbar .navbar-span {
+    color: white;
+  }
   
+  .navbar .active {
+    background-color: cornflowerblue;
+    color: white;
+    border-radius: 5px;
+  }
   
   /* LOGIN STYLLING */
   /* index.css */
+
   .auth-container {
   max-width: 400px;
   margin: 20px auto;
@@ -67,6 +104,7 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #f9f9f9;
+
   }
   
   h2 {
@@ -118,12 +156,14 @@
   }
   }
   
+
+  
   /* REGISTRATION STYLLING */
   /* + */
   /* update user */
   
   .auth-container {
-  max-width: 400px;
+  /* max-width: 400px; */
   margin: 20px auto;
   padding: 20px;
   border: 1px solid #ccc;
@@ -132,18 +172,18 @@
   }
   
   .auth-container h2 {
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
   font-size: 24px;
   color: #333;
   }
   
-  .form-group {
+  /* .form-group {
   margin-bottom: 15px;
-  }
+  } */
   
   .form-group label {
   display: block;
-  margin-bottom: 5px;
+  /* margin-bottom: 5px; */
   font-size: 16px;
   }
   
@@ -152,7 +192,7 @@
   .form-group input[type="password"] {
   width: 100%;
   padding: 8px;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
   border: 1px solid #ccc;
   border-radius: 3px;
   font-size: 16px;
@@ -175,15 +215,15 @@
   
   
   /* FOOTER STYKLING */
-  .footer{
-  background-color: black;
+  /* .footer{
+  background-color: rgb(0, 0, 0);
   color: white;
   padding: 20px;
   text-align: center;
   position: fixed;
   bottom: 0;
   width: 100%;
-  }
+  } */
   
   
   
@@ -325,4 +365,28 @@
   background-color: #093c72;
   }
   
-    
+/* history popup styling */
+.modal-header,
+.modal-body,
+.modal-footer {
+  text-align: center !important;
+}
+
+.status[data-status="Active"] {
+  color: green; /* Change color as per your requirement */
+}
+.status[data-status="Rejected"] {
+  color: red; /* Change color as per your requirement */
+}
+.status[data-status="Approve"] {
+  color: rgb(189, 186, 11); /* Change color as per your requirement */
+}
+
+.status[data-status="Scheduled"] {
+  color: rgb(189, 47, 11); /* Change color as per your requirement */
+}
+.status[data-status="ReScheduled"] {
+  color: rgb(61, 189, 11); /* Change color as per your requirement */
+}
+
+

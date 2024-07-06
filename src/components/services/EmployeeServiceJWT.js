@@ -7,6 +7,7 @@ const misendpoint   ='managerMisResponeField';
 const empDetailsInfoEndpoint = 'empDetailsInfo';
 const approvedendpoint   = 'approvedEmpdetails';
 const rejectedEmpdetails = 'rejectedEmpdetails';
+const empIntScheduleEndpoint = 'employees-schedule-interview';
 
 const axiosInstance = axios.create({
     baseURL: REST_API_BASE_URL,
@@ -41,7 +42,9 @@ const axiosInstance = axios.create({
       },
     });
   };
-
+  export const getlistOfEmpIntSchedule = () => {
+    return axiosInstance.get(`/${empIntScheduleEndpoint}`, authConfig());
+  };
   export const getlistOfManagerResponeField = () => {
     return axiosInstance.get(`/${maendpoint}`, authConfig());
   };
@@ -64,13 +67,23 @@ const axiosInstance = axios.create({
     return axiosInstance.get(`/${empDetailsInfoEndpoint}/${employeeId}`, authConfig());
   };
   
-  export const MrResponseSubmit = (employeeId, selectedResponse) => {
+  export const MrResponseSubmit = (employeeId, selectedResponse,mrUserName) => {
     const url = `${REST_API_BASE_URL}/${employeeId}/mRResponse`;
-    const data = { newStatus: selectedResponse };
-  
+    const data = { newStatus: selectedResponse,
+                   mrUserName: mrUserName                
+    };
     return axios.put(url, data, authConfig()); // Include authConfig() here to pass headers
   };
 
+  export const hrResponseSubmit = (employeeId, selectedResponse,hrUserName) => {
+    const url = `${REST_API_BASE_URL}/${employeeId}/hrResponse`;
+    const data = { 
+      newStatus: selectedResponse,
+      hrUserName:hrUserName
+    };
+  
+    return axios.put(url, data, authConfig());
+  };
 // class EmployeeServiceJWT{
 //     static Base_URL = 'http://localhost:8080/api/employees';
 

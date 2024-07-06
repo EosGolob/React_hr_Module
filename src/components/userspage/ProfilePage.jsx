@@ -25,10 +25,10 @@ function ProfilePage() {
 
     return (
         <div className="profile-page-container">
-            <h2>Profile Information</h2>
-            <p>Name: {profileInfo.name}</p>
-            <p>Email: {profileInfo.email}</p>
-            <p>City: {profileInfo.city}</p>
+            <h2>Login Profile Information</h2>
+            <p><strong>Name:</strong> {profileInfo.name}</p>
+            <p><strong>Email:</strong> {profileInfo.email}</p>
+            <p><strong>City: </strong>{profileInfo.city}</p>
             {/* {profileInfo.role === "ADMIN" && (
                 <button><Link to={`/update-user/${profileInfo.id}`}>Update This Profile</Link></button>
             )} */}
