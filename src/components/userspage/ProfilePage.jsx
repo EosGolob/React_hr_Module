@@ -24,14 +24,17 @@ function ProfilePage() {
     };
 
     return (
-        <div className="profile-page-container">
+        <div className='container' style={{backgroundColor: '#A8DADC', minHeight: '100vh', padding: '20px', minWidth:'100%'}}>
+        <div className="profile-page-container" style={{backgroundColor: '#F1FAEE' }}>
             <h2>Login Profile Information</h2>
             <p><strong>Name:</strong> {profileInfo.name}</p>
             <p><strong>Email:</strong> {profileInfo.email}</p>
             <p><strong>City: </strong>{profileInfo.city}</p>
+            <p><strong>Role: </strong>{profileInfo.role}</p>
             {/* {profileInfo.role === "ADMIN" && (
                 <button><Link to={`/update-user/${profileInfo.id}`}>Update This Profile</Link></button>
             )} */}
+        </div>
         </div>
     );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react'
-import { getlistOfRejectedEmpList,MrResponseSubmit, selectInterviewProcess ,getEmployeeDetails } from '../services/EmployeeServiceJWT';
+import { getlistOfRejectedEmpList, selectInterviewProcess ,getEmployeeDetails } from '../services/EmployeeServiceJWT';
 import {getAttendenedInterview} from '../services/InterviewServiceJWT';
 import {useUser} from '../auth/UserContext';
 import { format } from 'date-fns';
@@ -18,7 +18,7 @@ const RejectedStatusPage = () => {
   const [sortOrder, setSortOrder] = useState('asc'); 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-
+  const [selectionError, setSelectionError] = useState(false);
 
   const [attendedProcesses, setAttendedProcesses] = useState([]);
 
@@ -33,7 +33,8 @@ const RejectedStatusPage = () => {
         let filteredEmployees = response.data;
 
         if (filterDate) {
-          filteredEmployees = filteredEmployees.filter(emp => new Date(emp.creationDate) >= filterDate);
+          // filteredEmployees = filteredEmployees.filter(emp => new Date(emp.creationDate) >= filterDate);
+          filteredEmployees = filteredEmployees.filter(emp => new Date(emp.creationDate).toISOString().slice(0, 10) === filterDate.toISOString().slice(0, 10));
         }
 
         filteredEmployees.sort((a, b) => {
@@ -57,7 +58,7 @@ const getAttendenedProcesses = () => {
   )
   .then(processes => {
     console.log('Attended Processes Data:', processes);
-    setAttendedProcesses(processes);
+    // setAttendedProcesses(processes);
   })
   .catch(error => {
     console.error('Error fetching attended processes:', error);
@@ -97,6 +98,10 @@ const getAttendenedProcesses = () => {
   // };
   const handleAddInterviewProcess = (employeeId) =>{
     const employee = employees.find(emp => emp.id === employeeId);
+    if (!employee.selectedProcess) {
+      setSelectionError(true);
+      return; // Do not proceed with submission
+    }
     const interviewDate = new Date().toISOString().slice(0,10);
     const interviewTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
    
@@ -110,11 +115,14 @@ const getAttendenedProcesses = () => {
     };
     selectInterviewProcess(employeeId,interviewData)
     .then(response => {
+      window.location.reload();
       setAlertMessage("Interview Process assigned succussfully");
-      setAlertType("success");
+      // setAlertType("success");
+      setShowAlert(true);
       setTimeout(() =>{
         setShowAlert(false);
       },3000);
+      
     }).catch(error => {
       setAlertMessage("Error assigning interview process.try again");
       setShowAlert(true);
@@ -172,7 +180,10 @@ const toggleSortOrder = () => {
  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className='container'>
+    <div className='container' style={{backgroundColor: '#A8DADC', minHeight: '100vh', padding: '20px', minWidth:'100%'}}>
+    <div>
+    {selectionError && <p className="alert alert-danger">Select process first</p>}
+    </div>
       {showAlert && (
         <div className="alert alert-success" role="alert">
           {alertMessage}
@@ -188,25 +199,25 @@ const toggleSortOrder = () => {
           <input type="date" id="filterDate" className="form-control" onChange={handleFilterChange} value={filterDate ? filterDate.toISOString().split('T')[0] : ''} />
         </div>
         <div className="col-auto">
-          <button className="btn btn-outline-primary" onClick={clearFilter}>Clear Filter</button>
+          <button className="btn btn-outline-info" onClick={clearFilter}>Clear Filter</button>
         </div>
         <div className="col-auto">
-          <button className="btn btn-outline-primary" onClick={toggleSortOrder}>
+          <button className="btn btn-outline-info" onClick={toggleSortOrder}>
             {sortOrder === 'asc' ? 'Sort Desc' : 'Sort Asc'}
           </button>
         </div>
       </div>
-      <table className='table table-striped table-bordered'>
+      <table className='table table-striped table-bordered'style={{ border: '1px solid black', padding: '8px' }}>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Job Profile</th>
-            <th>Mobile No</th>         
-            <th>Gender</th>
-            <th>Register Date</th>
-            <th>Re Interview</th>
-            <th>Submit Response</th> 
+            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Name</th>
+            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Email</th>
+            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Job Profile</th>
+            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Mobile No</th>         
+            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Gender</th>
+            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Register Date</th>
+            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Re Interview</th>
+            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Submit Response</th> 
           </tr>
         </thead>
         <tbody>
@@ -225,14 +236,14 @@ const toggleSortOrder = () => {
                 <td>{employee.mobileNo}</td>
                 <td>{employee.gender}</td>
                 <td>{new Date(employee.creationDate).toLocaleDateString()}</td>
-                {/* <td>
-                  <select value={employee.selectedProcess||''} onChange={e=> handleProcessChange(e,employee.id)}>
+                <td  style={{ textAlign: 'center' }}>
+                  <select className='form-select' value={employee.selectedProcess||''} onChange={e=> handleProcessChange(e,employee.id)}>
                   <option value="" disabled>Select response</option>
                   <option value = "HDFC">HDFC</option>
                   <option value = "ICICI">ICICI</option>
                   <option value = "MIS">MIS</option>
                   </select>
-                </td>  */}
+                </td>  
                 {/* <td>
                   <select value={employee.selectedProcess || ''} onChange={e => handleProcessChange(e, employee.id)}>
                     <option value="" disabled>Select response</option>
@@ -241,7 +252,7 @@ const toggleSortOrder = () => {
                     <option value="MIS" disabled={attendedProcesses[employee.id] && attendedProcesses[employee.id].includes("MIS")}>MIS</option>
                   </select>
                 </td> */}
-                 <td>
+                 {/* <td>
                 <select
                   value={employee.selectedProcess || ''}
                   onChange={e => handleProcessChange(e, employee.id)}
@@ -266,18 +277,18 @@ const toggleSortOrder = () => {
                     MIS
                   </option>
                 </select>
-              </td>
+              </td> */}
+                 <td  style={{ textAlign: 'center', }}>
+                  <button  className="btn btn-outline-info" onClick={() => handleAddInterviewProcess(employee.id)}>Submit</button>
+                </td>
                  {/* <td>
-                  <button onClick={() => handleAddInterviewProcess(employee.id)}>Submit</button>
-                </td> */}
-                 <td>
                 <button
                   onClick={() => handleAddInterviewProcess(employee.id)}
                   disabled={attendedProcesses.some(process => process.employeeId === employee.id)}
                 >
                   Submit
                 </button>
-              </td>
+              </td> */}
               </tr>
             ))}
         </tbody>

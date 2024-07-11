@@ -1,47 +1,36 @@
-import React, { useState, useEffect } from 'react'
-import { MrResponseSubmit, getEmployeeDetails,getlistOfManagerHdfcResponeField } from '../services/EmployeeServiceJWT';
+import React, { useState, useEffect } from 'react';
+import { MrResponseSubmit, getEmployeeDetails, getListOfManagerResponseFieldOnRole } from '../components/services/EmployeeServiceJWT';
 import { format } from 'date-fns';
-import { useUser } from '../auth/UserContext';
+import { useUser } from '../components/auth/UserContext';
 
-const HdfcMrResponsePage = () => {
-
+const ManagerPageOnRoleType = () => {
   const { user } = useUser();
   const [employees, setEmployees] = useState([]);
   const [selectedResponse, setSelectedResponse] = useState({});
-  const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState([]);
+  const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [filterDate, setFilterDate] = useState(null); // State for filter date
-  const [sortOrder, setSortOrder] = useState('asc'); 
+  const [filterDate, setFilterDate] = useState(null);
+  const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
-
   const [responseError, setResponseError] = useState('');
 
   useEffect(() => {
     getAllEmployees();
-  }, [filterDate, sortOrder,currentPage]);
-
-
-  // function getAllEmployees() {
-  //   getlistOfManagerHdfcResponeField()
-  //     .then((response) => {
-  //       console.log('Response Data:', response.data);
-  //       setEmployees(response.data);
-  //     }).catch(error => {
-  //       console.error(error)
-  //     });
-  // }
+  }, [filterDate, sortOrder, currentPage, user]);
 
   function getAllEmployees() {
-    getlistOfManagerHdfcResponeField()
+    if (!user || !user.role) {
+      console.error('User context or role not available.');
+      return;
+    }
+
+    getListOfManagerResponseFieldOnRole(user.role)
       .then((response) => {
         let filteredEmployees = response.data;
-        // Apply filter by date if filterDate is set
         if (filterDate) {
-          // filteredEmployees = filteredEmployees.filter(emp => new Date(emp.creationDate) >= filterDate);
           filteredEmployees = filteredEmployees.filter(emp => new Date(emp.creationDate).toISOString().slice(0, 10) === filterDate.toISOString().slice(0, 10));
         }
-        // Sort employees by creationDate based on sortOrder
         filteredEmployees.sort((a, b) => {
           if (sortOrder === 'asc') {
             return new Date(a.creationDate) - new Date(b.creationDate);
@@ -50,21 +39,19 @@ const HdfcMrResponsePage = () => {
           }
         });
         setEmployees(filteredEmployees);
-      }).catch(error => {
-        console.error(error)
+      })
+      .catch(error => {
+        console.error('Error fetching employees:', error);
       });
   }
 
-
   const handleHrResponse = (e, employeeId) => {
     const selectedValue = e.target.value;
-    console.log('Selected Response:', selectedValue);
-    setSelectedResponse((prevSelectedResponse) => ({
+    setSelectedResponse(prevSelectedResponse => ({
       ...prevSelectedResponse,
       [employeeId]: selectedValue
     }));
   };
-
 
   const handleHrResponseValue = (employeeId) => {
     const selectedValue = selectedResponse[employeeId];
@@ -72,30 +59,22 @@ const HdfcMrResponsePage = () => {
       setResponseError('Please select a response');
       return;
     }
-    console.log('Submitting HR Response for Employee:', employeeId, 'Response:', selectedValue);
-    // Show an alert to confirm submission
+
     const confirmSubmit = window.confirm('Are you sure you want to submit this response?');
     if (confirmSubmit) {
-      // If user confirms, proceed with submission
       window.location.reload();
       MrResponseSubmit(employeeId, selectedValue, user.name)
         .then((response) => {
-          console.log('Response from Backend:', response.data);
-          setEmployees((prevEmployees) =>
-            prevEmployees.map((emp) =>
+          setEmployees(prevEmployees =>
+            prevEmployees.map(emp =>
               emp.id === employeeId ? response.data : emp
             )
           );
           setShowDetailsModal(false);
-         
         })
         .catch((error) => {
           console.error('Error submitting HR response:', error);
-          // Handle error
         });
-    } else {
-      // If user cancels, do nothing or provide feedback
-      console.log('Submission cancelled by user.');
     }
   };
 
@@ -104,7 +83,6 @@ const HdfcMrResponsePage = () => {
       .then((response) => {
         if (response.data.length > 0) {
           const employeeDetails = response.data[0];
-          console.log('Employee Details:', employeeDetails);
           setSelectedEmployeeDetails(employeeDetails);
           setShowDetailsModal(true);
         } else {
@@ -137,17 +115,15 @@ const HdfcMrResponsePage = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
-   // Calculate current employees to display based on pagination
-   const indexOfLastEmployee = currentPage * perPage;
-   const indexOfFirstEmployee = indexOfLastEmployee - perPage;
-   const displayedEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
- 
-   // Change page
-   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const indexOfLastEmployee = currentPage * perPage;
+  const indexOfFirstEmployee = indexOfLastEmployee - perPage;
+  const displayedEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
-    <div className='container' style={{backgroundColor: '#A8DADC', minHeight: '100vh', padding: '20px', minWidth:'100%'}}>
-       {responseError && <div className="alert alert-danger">{responseError}</div>} 
+    <div className='container' style={{ backgroundColor: '#A8DADC', minHeight: '100vh', padding: '20px', minWidth: '100%' }}>
+      {responseError && <div className="alert alert-danger">{responseError}</div>}
       <br></br>
       <br></br>
       <div className="row mb-3">
@@ -166,18 +142,18 @@ const HdfcMrResponsePage = () => {
           </button>
         </div>
       </div>
-     
+
       <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '8px' }}>
         <thead>
           <tr>
-            <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Name</th>
-            <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Email</th>
-            <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Job Profile</th>
-            <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Mobile No</th>
-            <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Gender</th>
-            <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Register Date</th>
-            <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Actions</th>
-            <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Submit Response</th>
+            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Name</th>
+            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Email</th>
+            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Job Profile</th>
+            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Mobile No</th>
+            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Gender</th>
+            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Register Date</th>
+            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Actions</th>
+            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Submit Response</th>
           </tr>
         </thead>
         <tbody>
@@ -207,12 +183,13 @@ const HdfcMrResponsePage = () => {
                 </select>
               </td>
               <td style={{ textAlign: 'center', }}>
-                <button   className="btn btn-outline-info" onClick={() => handleHrResponseValue(employee.id)}>Submit</button>
+                <button className="btn btn-outline-info" onClick={() => handleHrResponseValue(employee.id)}>Submit</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
       <nav>
         <ul className="pagination">
           <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
@@ -224,6 +201,7 @@ const HdfcMrResponsePage = () => {
           </li>
         </ul>
       </nav>
+
       {selectedEmployeeDetails && (
         <div className="modal" style={{ display: showDetailsModal ? 'block' : 'none' }}>
           <div className="modal-dialog">
@@ -256,4 +234,5 @@ const HdfcMrResponsePage = () => {
     </div>
   );
 };
-export default HdfcMrResponsePage
+
+export default ManagerPageOnRoleType;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react'
-import { getlistOfManagerMisResponeField,MrResponseSubmit,getEmployeeDetails } from '../services/EmployeeServiceJWT';
+import { MrResponseSubmit,getEmployeeDetails,getlistOfManagerMisResponeField } from '../services/EmployeeServiceJWT';
 import { format } from 'date-fns';
 import { useUser } from '../auth/UserContext';
 const MisMrResponsePage = () => {
@@ -14,6 +14,8 @@ const MisMrResponsePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
 
+  const [responseError, setResponseError] = useState('');
+
   useEffect(() => {
     getAllEmployees();
   }, [filterDate, sortOrder,currentPage]);
@@ -25,7 +27,8 @@ const MisMrResponsePage = () => {
         let filteredEmployees = response.data;
         // Apply filter by date if filterDate is set
         if (filterDate) {
-          filteredEmployees = filteredEmployees.filter(emp => new Date(emp.creationDate) >= filterDate);
+          // filteredEmployees = filteredEmployees.filter(emp => new Date(emp.creationDate) >= filterDate);
+          filteredEmployees = filteredEmployees.filter(emp => new Date(emp.creationDate).toISOString().slice(0, 10) === filterDate.toISOString().slice(0, 10));
         }
         filteredEmployees.sort((a, b) => {
           if (sortOrder === 'asc') {
@@ -52,6 +55,10 @@ const MisMrResponsePage = () => {
 
   const handleHrResponseValue = (employeeId) => {
     const selectedValue = selectedResponse[employeeId];
+    if (!selectedValue) {
+      setResponseError('Please select a response');
+      return;
+    }
     console.log('Submitting HR Response for Employee:', employeeId, 'Response:', selectedValue);
 
     // Show an alert to confirm submission
@@ -125,9 +132,11 @@ const MisMrResponsePage = () => {
    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
 return (
-  <div className='container'>
+  <div className='container' style={{backgroundColor: '#A8DADC', minHeight: '100vh', padding: '20px', minWidth:'100%'}}>
+    {responseError && <div className="alert alert-danger">{responseError}</div>} 
     <br></br>
     <br></br>
+   
     <div className="row mb-3">
         <div className="col-auto">
           <label htmlFor="filterDate" className="col-form-label">Filter by Date:</label>
@@ -136,25 +145,26 @@ return (
           <input type="date" id="filterDate" className="form-control" onChange={handleFilterChange} value={filterDate ? filterDate.toISOString().split('T')[0] : ''} />
         </div>
         <div className="col-auto">
-          <button className="btn btn-outline-primary" onClick={clearFilter}>Clear Filter</button>
+          <button className="btn btn-outline-info" onClick={clearFilter}>Clear Filter</button>
         </div>
         <div className="col-auto">
-          <button className="btn btn-outline-primary" onClick={toggleSortOrder}>
+          <button className="btn btn-outline-info" onClick={toggleSortOrder}>
             {sortOrder === 'asc' ? 'Sort Desc' : 'Sort Asc'}
           </button>
         </div>
       </div>
-    <table className='table table-striped table-bordered'>
+    
+    <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '8px' }}>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Job Profile</th>
-          <th>Mobile No</th>
-          <th>Gender</th>
-          <th>Register Date</th>
-          <th>Actions</th>
-          <th>Submit Response</th>
+          <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Name</th>
+          <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Email</th>
+          <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Job Profile</th>
+          <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Mobile No</th>
+          <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Gender</th>
+          <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Register Date</th>
+          <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Actions</th>
+          <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Submit Response</th>
         </tr>
       </thead>
       <tbody>
@@ -174,17 +184,17 @@ return (
             <td>{employee.gender}</td>
             <td>{new Date(employee.creationDate).toLocaleDateString()}</td>
             <td>
-              <select
+              <select className='form-select'
                 value={selectedResponse[employee.id] || ''}
                 onChange={(e) => handleHrResponse(e, employee.id)}
               >
                 <option value="">Select response</option>
-                <option value="Approved">Approved</option>
-                <option value="Rejected">Rejected</option>
+                <option value="Select">Select</option>
+                <option value="Reject">Reject</option>
               </select>
             </td>
-            <td>
-              <button onClick={() => handleHrResponseValue(employee.id)}>Submit</button>
+            <td style={{ textAlign: 'center', }}>
+              <button className='btn btn-outline-info' onClick={() => handleHrResponseValue(employee.id)} >Submit</button>
             </td>
           </tr>
         ))}

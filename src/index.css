@@ -2,76 +2,46 @@
 /* NAVBAR STYLING */
 
   .navbar {
-    background-color: #f2f2f2;
-    padding: 20px;
-    font-size: 15px;
-    /* font-weight: 600; */
-    font-family: Cambria;
+    background-color: #2D4262;
+    font-size: 18px;
+    font-family: 'Lucida Sans';
+    
   }
+  
   .link-button {
-  background-color: rgb(217, 217, 224);
-  color: black;
-  padding: 10px 15px;
+  /* background-color: rgb(217, 217, 224); */
+  /* color: #FFF3B0; */
+  padding: 5px 10px;
   border-radius: 5px;
   text-decoration: none;
   display: inline-block;
 
   transition: background-color 0.3s ease;
   }
-  
 
-.link-button:hover {
-  /* background-color: #555; */
-}
-  nav {
-  /* background-color:#f2f2f2; */
-  padding: 10px 0;
-  padding: 20px;
-  font-size: 10px;
-  font-weight: 600;
-  }
-  
-  ul {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  text-align: center;
-  border-radius: 5px;
-  }
   
   li {
   display: inline-block;
-  margin: 0 10px;
-  /* color: #fff; */
+   
   }
   
 
   li a {
-    color: #fff; /* This will override the global 'a' tag color */
+    
     text-decoration: none;
     display: inline-block;
     padding: 10px 15px;
     border-radius: 5px;
-    font-family: 'Arial', sans-serif; 
+    font-family: Cambria; 
+    
   }
 
   li a:hover {
-    background-color: cornflowerblue;
+    background-color: #093c72;
+    padding: 5px 10px;
   }
-
-
-  /* a {
-  color: #fff;
-  text-decoration: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-  display: block;
-  } */
   
-  /* a:hover {
-  background-color: #555;
-  } */
+
   
   @media only screen and (max-width: 200px) {
   nav {
@@ -81,6 +51,7 @@
   li {
   display: block;
   margin: 10px 0;
+  
     }
   }
   
@@ -89,9 +60,9 @@
   }
   
   .navbar .active {
-    background-color: cornflowerblue;
-    color: white;
+    background-color: #048ABF;
     border-radius: 5px;
+    
   }
   
   /* LOGIN STYLLING */
@@ -101,15 +72,12 @@
   max-width: 400px;
   margin: 20px auto;
   padding: 40px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+
   background-color: #f9f9f9;
+  
 
   }
   
-  h2 {
-  margin-top: 0;
-  }
   
   .form-group {
   margin-bottom: 15px;
@@ -123,30 +91,15 @@
   input[type="email"],
   input[type="password"] {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  padding: 5px;
+    
   }
-  
-  button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  }
-  
-  button:hover {
-  background-color: #0056b3;
-  }
+ 
   
   @media only screen and (max-width: 600px) {
   .auth-container {
   padding: 10px;
+  
   }
   
   input[type="email"],
@@ -164,8 +117,8 @@
   
   .auth-container {
   /* max-width: 400px; */
-  margin: 20px auto;
-  padding: 20px;
+  /* margin: 20px auto; */
+  /* padding: 20px; */
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #f9f9f9;
@@ -191,7 +144,7 @@
   .form-group input[type="email"],
   .form-group input[type="password"] {
   width: 100%;
-  padding: 8px;
+  /* padding: 8px; */
   /* margin-bottom: 10px; */
   border: 1px solid #ccc;
   border-radius: 3px;
@@ -199,23 +152,15 @@
   }
   
   button[type="submit"] {
-  padding: 10px 20px;
   border: none;
-  border-radius: 3px;
-  background-color: #007bff;
-  color: #fff;
   font-size: 16px;
   cursor: pointer;
   }
-  
-  button[type="submit"]:hover {
-  background-color: #0056b3;
-  }
-  
+
   
   
   /* FOOTER STYKLING */
-  /* .footer{
+   /* .footer{
   background-color: rgb(0, 0, 0);
   color: white;
   padding: 20px;
@@ -223,7 +168,7 @@
   position: fixed;
   bottom: 0;
   width: 100%;
-  } */
+  }  */
   
   
   
@@ -266,9 +211,9 @@
   
   /*USER MANAGEMENT PAGE*/
   .user-management-container {
-  max-width: 800px;
-  margin: 0px auto 60px auto;
-  padding: 20px;
+  /* max-width: 800px; */
+  /* margin: 0px auto 60px auto; */
+  /* padding: 20px; */
   
   }
   
@@ -301,7 +246,7 @@
   background-color: #f2f2f2;
   }
   
-  button {
+  /* button {
   padding: 10px;
   background-color: #007bff;
   color: white;
@@ -309,15 +254,15 @@
   border-radius: 4px;
   cursor: pointer;
   }
-  
+   */
   .reg-button {
   padding: 15px;
   margin: 10px auto;
   }
   
-  button:hover {
+  /* button:hover {
   background-color: #0056b3;
-  }
+  } */
   
   .delete-button {
   background-color: rgb(255, 9, 9);
@@ -375,7 +320,7 @@
 .status[data-status="Active"] {
   color: green; /* Change color as per your requirement */
 }
-.status[data-status="Rejected"] {
+.status[data-status="Reject"] {
   color: red; /* Change color as per your requirement */
 }
 .status[data-status="Approve"] {
@@ -389,4 +334,7 @@
   color: rgb(61, 189, 11); /* Change color as per your requirement */
 }
 
+.status[data-status="Select"] {
+  color: rgb(189, 47, 11); /* Change color as per your requirement */
+}
 

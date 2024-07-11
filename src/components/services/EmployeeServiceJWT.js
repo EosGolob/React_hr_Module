@@ -8,6 +8,7 @@ const empDetailsInfoEndpoint = 'empDetailsInfo';
 const approvedendpoint   = 'approvedEmpdetails';
 const rejectedEmpdetails = 'rejectedEmpdetails';
 const empIntScheduleEndpoint = 'employees-schedule-interview';
+const hrRejectEmployeEndPoint = 'hrRejectedEmpDetails';
 
 const axiosInstance = axios.create({
     baseURL: REST_API_BASE_URL,
@@ -48,6 +49,7 @@ const axiosInstance = axios.create({
   export const getlistOfManagerResponeField = () => {
     return axiosInstance.get(`/${maendpoint}`, authConfig());
   };
+  
   export const getlistOfManagerHdfcResponeField = () => {
     return axiosInstance.get(`/${hdfcendpoint}`, authConfig());
   };
@@ -57,11 +59,21 @@ const axiosInstance = axios.create({
   export const getlistOfManagerMisResponeField = () => {
     return axiosInstance.get(`/${misendpoint}`, authConfig());
   };
+
+  export const getListOfManagerResponseFieldOnRole = (role) => {
+    return axiosInstance.get(`/getAllEmployeeOnManagersPage/${role}`, authConfig());
+  };
+  
+
   export const getlistOfApprovedEmpList = () =>{
     return axiosInstance.get(`/${approvedendpoint}`, authConfig());
   }
   export const getlistOfRejectedEmpList = () => {
     return axiosInstance.get(`/${rejectedEmpdetails}`, authConfig());
+  }
+
+  export const gethrRejectedEmpList = () => {
+    return axiosInstance.get(`/${hrRejectEmployeEndPoint}`, authConfig());
   }
   export const getEmployeeDetails = (employeeId) => {
     return axiosInstance.get(`/${empDetailsInfoEndpoint}/${employeeId}`, authConfig());
@@ -84,39 +96,12 @@ const axiosInstance = axios.create({
   
     return axios.put(url, data, authConfig());
   };
-// class EmployeeServiceJWT{
-//     static Base_URL = 'http://localhost:8080/api/employees';
 
-//     static async listofemployeeonprocesspage(userData ,token){
-//       try{
-//         const response = await axios.get(`${EmployeeServiceJWT.Base_URL}/getAllEmp`,userData,
-//           {
-//             headers: {Authorization:`Bearer ${token}`}
-//           })
-//           return response.data;
-//         }catch(err){
-//           throw err;
-//         }
-//       }
-    
-//     static isAuthenticated(){
-//         const token =  localStorage.getItem('token') 
-//         return !! token
-//     }
-
-//     static isAdmin(){
-//         const role =  localStorage.getItem('role') 
-//         return role === 'ADMIN'
-//     }
-
-//     static isUser(){
-//         const role =  localStorage.getItem('role') 
-//         return role === 'USER'
-//     }
-
-//     static adminOnly(){
-        
-//         return this.isAuthenticated() && this.isAdmin();
-//     }
-// }
-// export default EmployeeServiceJWT;
+  export const updateEmployeeHrRejectedScreeningResponse = (employeeId , selectedResponse ,userName) => {
+    const url = `${REST_API_BASE_URL}/${employeeId}/rejectByhrReInterviewSchedule`;
+    const data = {
+      newStatus: selectedResponse,
+      userName:userName
+    };
+    return axios.put(url, data, authConfig());
+  };

@@ -34,8 +34,8 @@ function LoginPage() {
   };
 
   return (
-    <div className="container">
-      <div className="auth-container">
+    <div className="container" style={{backgroundColor: '#A8DADC', minHeight: '100vh', minWidth:'100%',overflow: 'hidden'}} >
+      <div className="auth-container" style={{backgroundColor: '#F1FAEE'}}>
         <h2>Login</h2>
         {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
@@ -47,7 +47,7 @@ function LoginPage() {
             <label>Password: </label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
-          <button type="submit">Login</button>
+          <button type="submit" style={{ backgroundColor: '#457B9D', marginLeft:'120px', color:'whitesmoke', padding:'5px 20px'}} >Login</button>
         </form>
       </div>
     </div>
