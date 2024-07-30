@@ -1,7 +1,10 @@
-import React, { useState, useEffect,useRef} from 'react'
+import React, { useState, useEffect,useRef,useContext} from 'react'
 import { gethrRejectedEmpList,updateEmployeeHrRejectedScreeningResponse } from '../services/EmployeeServiceJWT';
 import * as XLSX from 'xlsx';
 import {useUser} from '../auth/UserContext';
+import DataTable from 'react-data-table-component';
+import { AuthContext } from '../auth/AuthContext';
+import { useNavigate } from 'react-router-dom'; 
 
 const RejectedByHr = () => {
   const {user} = useUser();
@@ -10,6 +13,8 @@ const RejectedByHr = () => {
   const [endDate, setEndDate] = useState(null);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const tableRef = useRef(null);
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     getAllEmployees();
@@ -56,8 +61,8 @@ const handleFilter = () => {
 const handleClearFilter = () => {
   setStartDate(null);
   setEndDate(null);
-  setFilteredEmployees(employees); // Reset to all employees
-  setCurrentPage(1); // Reset pagination
+  setFilteredEmployees(employees); 
+  setCurrentPage(1); 
 };
 
 const handleDownload = () => {
@@ -81,9 +86,7 @@ const handleHrResponseValue = (employeeId) => {
     if (!user || !user.name) {
         console.error('User information not available');
         return;
-      }
-    // const userName = user.userName; 
-    // console.log("user----------"+userName)
+    }
     updateEmployeeHrRejectedScreeningResponse(employeeId, null,user.name)
       .then(response => {
         console.log('Response from backend:', response.data);
@@ -94,9 +97,85 @@ const handleHrResponseValue = (employeeId) => {
       });
   };
 
+  const handleLogout = (e) => {
+    e.preventDefault(); // Prevent the default anchor behavior
+    const confirmLogout = window.confirm('Are you sure you want to logout?');
+    if (confirmLogout) {
+        logout();
+        navigate('/');
+    }
+};
+  const columns = [
+    {
+      name: 'Name',
+      cell: row => (
+        <button className='btn btn-link' onClick={() => showEmployeeDetails(row.id)}>
+          {row.fullName}
+        </button>
+      ),
+      sortable: true,
+    },
+    {
+      name: 'Email',
+      selector: row => row.email,
+      sortable: true,
+    },
+    {
+      name: 'Job Profile',
+      selector: row => row.jobProfile,
+      sortable: true,
+    },
+    {
+      name: 'Mobile No',
+      selector: row => row.mobileNo,
+      sortable: true,
+    },
+    {
+      name: 'Register Date',
+      selector: row => formatDate(row.creationDate),
+      sortable: true,
+    },
+    {
+      name: 'Permanent Address',
+      selector: row => row.permanentAddress,
+      sortable: true,
+    },
+    {
+      name: 'Gender',
+      selector: row => row.gender,
+      sortable: true,
+    },
+    {
+      name: 'Remark By Hr',
+      selector: row => row.reMarksByHr,
+      sortable: true,
+    },
+    {
+      name: 'Remark By Manager',
+      selector: row => row.reMarksByManager,
+      sortable: true,
+    },
+    {
+      name: 'Remark Profile Screen',
+      selector: row => row.profileScreenRemarks,
+      sortable: true,
+    },
+    {
+      name: 'Actions',
+      cell: row => (
+        <button className="btn btn-outline-info" onClick={() => handleHrResponseValue(row.id)}>Screening</button>
+      )
+    }
+  ];
+
 
   return (
-    <div className='container' style={{backgroundColor: '#A8DADC', minHeight: '100vh', padding: '20px', minWidth:'100%'}}>
+    <>
+    <div class="header">
+                <span class="pe-3">Friday, July 8, 2022 19:18:17</span>
+                <a class="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></a>
+            </div>
+    <div className='container'>
       <br></br>
       <br></br>
       <div className="row mb-3">
@@ -114,7 +193,17 @@ const handleHrResponseValue = (employeeId) => {
           <button className="btn btn-outline-info" onClick={handleDownload} disabled={filteredEmployees.length === 0}>Download Filtered Data</button>
         </div>
       </div>
-      <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '8px' }}>
+      <DataTable
+          columns={columns}
+          data={filteredEmployees}
+          pagination
+          highlightOnHover
+          pointerOnHover
+          striped
+          responsive
+        />
+      </div>
+      {/* <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '8px' }}>
         <thead>
           <tr>
             <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Name</th>
@@ -123,23 +212,21 @@ const handleHrResponseValue = (employeeId) => {
             <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Mobile No</th>
             <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Register Date</th>
             <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Gender</th>
+            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Remark By Hr</th>
             <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Actions</th>
 
           </tr>
         </thead>
         <tbody>
-          {/* {
-             Array.isArray(employees) && employees.map((employee) => ( */}
               {filteredEmployees.map((employee) => (
               <tr key={employee.id}>
                 <td>{employee.fullName}</td>
                 <td>{employee.email}</td>
                 <td>{employee.jobProfile}</td>
                 <td>{employee.mobileNo}</td>
-                {/* <td>{new Date(employee.creationDate).toLocaleDateString()}</td> */}
-                <td>{formatDate(employee.creationDate)}</td>
-                {/* <td>{employee.permanentAddress}</td> */}
+                <td>{formatDate(employee.creationDate)}</td>        
                 <td>{employee.gender}</td>
+                <td>{employee.profileScreenRemarks}</td>
                 <td style={{ textAlign: 'center', }}>
                   <button   className="btn btn-outline-info"  onClick={() => handleHrResponseValue(employee.id)}>Screening</button>
                 </td>
@@ -147,8 +234,9 @@ const handleHrResponseValue = (employeeId) => {
               </tr>
             ))}
         </tbody>
-      </table>
-    </div>
+      </table> */}
+    {/* </div> */}
+    </>
   );
   
 };

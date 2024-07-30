@@ -1,0 +1,101 @@
+/* Krunal Wankhede CSS  */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+
+/**************** Theme ****************
+
+primary ---  #CCFE01
+primary hover --- #b0db04
+black ---  #1F1F1F
+faded white --- #F0F0F2
+
+****************/
+
+
+/**************** Gobal CSS  ****************/
+body{font-family: 'Roboto', sans-serif; background-color: #DFE3E5; color: #1F1F1F; font-size: 14px; overflow: hidden;}
+h1{font-weight: 600; font-size: 24px; margin-top: 20px;}
+a{transition: all ease .4s;}
+.form-control::placeholder{color: #A5A5A5; opacity: 1; /* Firefox */}
+.form-control:-ms-input-placeholder {/* Internet Explorer 10-11 */ color: #A5A5A5;}
+.form-control::-ms-input-placeholder {/* Microsoft Edge */ color: #A5A5A5;}
+hr{border: 1px solid #D1D1D1;}
+
+/**************** Bootstrap changed CSS  ****************/
+.navbar{border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;}
+.form-label{font-weight: 500; font-size: 16px;}
+.form-control, .form-select{border-radius: 0; font-size: 14px; line-height: 2;}
+.card{/* box-shadow: 0 0 10px 1px #cacaca; */ box-shadow: 0px 0px 35px rgba(0, 0, 0, 0.1); border-radius: 20px; border: none; background: rgb(255 255 255 / 70%);}
+.card-body{padding: 25px;}
+.card-title{font-weight: 600;}
+.card-header{background-color:transparent; font-weight: 700; font-size: 18px; padding: 12px 25px;}
+.card-footer{background-color:transparent;}
+.nav-link{background-color: #1C3657; color: #FFFFFF; margin-top: 15px; padding:10px 15px; border: none; margin-left: 25px; margin-right: 25px; border-radius: 0.375rem;}
+.nav-link:hover, .nav-link:focus{background-color: #7f2433; color: #FFFFFF;}
+.navbar-nav .nav-link.active{background-color: #FE3540; color: #FFFFFF;}
+.form-control, .form-select{border-radius: 10px; border: 1px solid #e6e5e5;}
+/* .table{border: 1px solid #1C3657;} */
+.table thead{background: #59636e; color: #FFF;}
+@media (min-width: 1200px){
+    .container{width: 70%;}
+}
+
+
+/**************** Main CSS  ****************/
+.display-panel {display: flex; align-items: stretch; height: 100vh;}
+.display-panel .left-panel {width: 220px; background: #FFFFFF; position: relative; display: flex; flex-direction: column; scrollbar-width: none; box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);}
+.left-panel .top-wrap {flex: 1;}
+.left-panel .logo-wrap {padding: 40px; margin-top: 10px; text-align: center;}
+.left-panel .edas-logo{width: 120px;}
+.left-panel .username{font-size: 16px; text-align: center; color: #D4D1D1;}
+.left-panel .nav-link .fas{padding-right: 5px;}
+.display-panel .left-panel::before{bottom: 1px;border-bottom-right-radius: 25px;box-shadow: 0 10px 0 0 #ffffff;content: '';position: absolute;height: 20px;width: 24px;right: -25px;z-index: 111;transform: rotate(74deg);}
+
+.display-panel .right-panel{width: calc(100% - 220px);background: #f2f2f7; color: #000;overflow: auto;scrollbar-width: none;display: flex;flex-direction: column; background: url(../img/globe-bg.png) no-repeat; background-size: 40%; background-position: bottom center;}
+
+.right-panel .header {display: flex; padding: 10px; padding-left: 0; justify-content: flex-end; font-size: 13px; position: sticky; top: 0; left: 0; width: 100%; background: #FFF; z-index: 2; align-items: center; box-shadow: 9px 4px 15px rgba(0, 0, 0, 0.2);  color: #D4D1D1;}
+.right-panel .header::before{bottom: -22px;border-bottom-right-radius: 25px;box-shadow: 0 10px 0 0 #ffffff;content: '';position: absolute;height: 18px;width: 25px;left: -3px;z-index: 111;transform: rotate(156deg);}
+.right-panel .header::after{bottom: -23px;border-bottom-right-radius: 25px;box-shadow: 0 12px 0 0 #ffffff;content: '';position: absolute;height: 25px;width: 30px;right: 4px;z-index: 111;transform: rotate(245deg);}
+.logout-btn{color: #D9D9D9;}
+.logout-btn:hover{color: #fe3540;}
+
+/* Dashboard */
+.dashboard-wrap {padding: 15px 30px; position: relative; color: #272b41; flex: 1; overflow: auto;}
+.card-title img{width: 25px; vertical-align: sub;}
+.linkedin .card-title{color: #007AB9;}
+.zoominfo .card-title{color: #399EF7;}
+.stat-data-circle{width: 130px; height: 130px; border-radius: 50%; border: 5px solid; margin: 20px auto; text-align: center; font-weight: 600; font-size: 58px; padding: 20px 0; }
+.linkedin .stat-data-circle{color: #007AB9;}
+.zoominfo .stat-data-circle{color: #399EF7;}
+.total-data-text{font-weight: 300;}
+.linkedin .total-data-text{color: #007AB9;}
+.zoominfo .total-data-text{color: #399EF7;}
+.from-to-date label{font-size: 12px;}
+.from-to-date .form-control, .from-to-date .form-select{line-height: 1.2;}
+.from-to-date .btn{line-height: 1;}
+
+.modal-body .successful-text{color: #2CA77B;}
+.text-import-data{font-size: 16px;}
+
+.list-box .card-body{height: 70vh; overflow: hidden; overflow-y: auto;}
+
+table.dataTable tbody tr{border-color: #D1D1D1;}
+table.dataTable tbody tr td:first-child{border-left:1px solid #1C3657;}
+table.dataTable tbody tr td:last-child{border-right:1px solid #1C3657;}
+table.dataTable tbody tr:last-child td{border-bottom:1px solid #1C3657;}
+table.dataTable.no-footer{border-bottom: none;}
+
+
+/* Loader  */
+.loader-back-spot{background-color:rgb(0 0 0 / 80%); position: fixed; bottom: 0; top: 0; left: 0; right: 0; z-index: 11; display: none;}
+.loader-box{width: 100px; height: 100px; margin: auto; position: absolute; top: 0; bottom: 0; left: 0; right: 0; background: #FFF; text-align: center; border-radius: 20px;}
+.loader-img{width: 70%; position: absolute; left: 0; right: 0; margin: auto; top: 0; bottom: 0; animation: rotation 1.75s infinite linear;}
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(359deg);
+    }
+}

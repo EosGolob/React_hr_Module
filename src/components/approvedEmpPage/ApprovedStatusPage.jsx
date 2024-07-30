@@ -1,7 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef,useContext } from 'react'
 import { getEmployeeDetails, getlistOfApprovedEmpList } from '../services/EmployeeServiceJWT';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
+import DataTable from 'react-data-table-component';
+import { AuthContext } from '../auth/AuthContext';
+import { useNavigate } from 'react-router-dom';  
+
 const ApprovedStatusPage = () => {
 
   const [employees, setEmployees] = useState([]);
@@ -13,6 +17,8 @@ const ApprovedStatusPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const tableRef = useRef(null);
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     getAllEmployees();
@@ -55,7 +61,7 @@ const ApprovedStatusPage = () => {
 
     setFilteredEmployees(sortedFiltered);
     // setFilteredEmployees(filtered);
-    setCurrentPage(1);
+    setCurrentPage(5);
   };
 
   const handleClearFilter = () => {
@@ -64,8 +70,8 @@ const ApprovedStatusPage = () => {
     setFilteredEmployees(employees); // Reset to all employees
     setCurrentPage(1); // Reset pagination
   };
-  
-  
+
+
   const handleDownload = () => {
     const filteredData = filteredEmployees.map(employee => ({
       Name: employee.fullName,
@@ -82,25 +88,25 @@ const ApprovedStatusPage = () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Filtered Employees');
     XLSX.writeFile(workbook, 'filtered_employees.xlsx');
   };
-  const showEmployeeDetails = (employeeId) =>{
+  const showEmployeeDetails = (employeeId) => {
     getEmployeeDetails(employeeId)
-    .then((response) => {
-      if(response.data.length > 0){
-        const employeeDetails = response.data[0];
-        console.log('Employee Details:',employeeDetails);
-        setSelectedEmployeeDetails(employeeDetails);
-        setShowDetailsModal(true);
-      }else{
-        console.error('Employee not found ');
+      .then((response) => {
+        if (response.data.length > 0) {
+          const employeeDetails = response.data[0];
+          console.log('Employee Details:', employeeDetails);
+          setSelectedEmployeeDetails(employeeDetails);
+          setShowDetailsModal(true);
+        } else {
+          console.error('Employee not found ');
+          setSelectedEmployeeDetails(null);
+          setShowDetailsModal(false);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
         setSelectedEmployeeDetails(null);
         setShowDetailsModal(false);
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      setSelectedEmployeeDetails(null);
-      setShowDetailsModal(false);
-    });
+      });
   };
   const closeModal = () => {
     setShowDetailsModal(false);
@@ -120,107 +126,197 @@ const ApprovedStatusPage = () => {
     setItemsPerPage(newItemsPerPage);
     setCurrentPage(1); // Reset to first page when changing items per page
   };
+// Define columns for DataTable
+const handleLogout = (e) => {
+  e.preventDefault(); // Prevent the default anchor behavior
+  const confirmLogout = window.confirm('Are you sure you want to logout?');
+  if (confirmLogout) {
+      logout();
+      navigate('/');
+  }
+};
+const columns = [
+  {
+    name: 'Name',
+    selector: row => (
+      <button className='btn btn-link' onClick={() => showEmployeeDetails(row.id)}>
+        {row.fullName}
+      </button>
+    ),
+    sortable: true,
+  },
+  {
+    name: 'Email',
+    selector: row => row.email,
+    sortable: true,
+  },
+  {
+    name: 'Job Profile',
+    selector: row => row.jobProfile,
+    sortable: true,
+  },
+  {
+    name: 'Mobile No',
+    selector: row => row.mobileNo,
+    sortable: true,
+  },
+  {
+    name: 'Register Date',
+    selector: row => formatDate(row.creationDate),
+    sortable: true,
+  },
+  {
+    name: 'Permanent Address',
+    selector: row => row.permanentAddress,
+    sortable: true,
+  },
+  {
+    name: 'Gender',
+    selector: row => row.gender,
+    sortable: true,
+  },
+  {
+    name: 'Remark By Hr',
+    selector: row => row.reMarksByHr,
+    sortable: true,
+  },
+  {
+    name: 'Remark By Manager',
+    selector: row => row.reMarksByManager,
+    sortable: true,
+  },
+  {
+    name: 'Remark Profile Screen',
+    selector: row => row.profileScreenRemarks,
+    sortable: true,
+  },
+];
   return (
-    <div className='container' style={{ backgroundColor: '#A8DADC', minHeight: '100vh', padding: '20px', minWidth: '100%' }}>
-      <br></br>
-      <br></br>
-      <div className="row mb-3">
-        <div className="col-auto d-flex align-items-center">
-          <label htmlFor="startDate">Start Date:</label>
-          <input type="date" id="startDate" className='form-control' onChange={(e) => setStartDate(new Date(e.target.value))} />
-        </div>
-        <div className="col-auto d-flex align-items-center">
-          <label htmlFor="endDate">End Date:</label>
-          <input type="date" id="endDate" className='form-control' onChange={(e) => setEndDate(new Date(e.target.value))} />
-        </div>
-        <div className="col-auto">
-          <button className="btn btn-outline-info me-2" onClick={handleFilter}>Filter</button>
-          <button className="btn btn-outline-info me-2" onClick={handleClearFilter}>Clear Filter</button>
-          <button className="btn btn-outline-info" onClick={handleDownload} disabled={filteredEmployees.length === 0}>Download Filtered Data</button>
-        </div>
+    <>
+      <div className="header">
+        <span className="pe-3">Friday, July 8, 2022 19:18:17</span>
+        <a className="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></a>
       </div>
-      <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '8px' }}>
-        <thead>
-          <tr>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Name</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Email</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Job Profile</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Mobile No</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Register Date</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Permanent Address</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Gender</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* {
-             Array.isArray(employees) && employees.map((employee) => ( */}
-          {/* {filteredEmployees.map((employee) => ( */}
-           {currentItems.map((employee) => (
-            <tr key={employee.id}>
-              <td>
-                <button className='btn btn-link'
-                onClick = {() => showEmployeeDetails(employee.id)}>
-                {employee.fullName}
-                </button></td>
-              <td>{employee.email}</td>
-              <td>{employee.jobProfile}</td>
-              <td>{employee.mobileNo}</td>
-              {/* <td>{new Date(employee.creationDate).toLocaleDateString()}</td> */}
-              <td>{formatDate(employee.creationDate)}</td>
-              <td>{employee.permanentAddress}</td>
-              <td>{employee.gender}</td>
-
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {selectedEmployeeDetails && (
-        <div className="modal" style={{ display: showDetailsModal ? 'block' : 'none' }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title text-center">Employee Details:</h5>
-              </div>
-              <div className="modal-body">
-                <p><strong>Full Name:</strong> {selectedEmployeeDetails.fullName}</p>
-                <p><strong>Email: </strong>{selectedEmployeeDetails.email}</p>
-                <p><strong>Aadhar Number:</strong>  {selectedEmployeeDetails.aadhaarNumber}</p>
-                <hr />
-                {selectedEmployeeDetails.statusHistories && selectedEmployeeDetails.statusHistories.map((history, index) => (
-                  <div key={index}>
-                    <p><strong>Status: </strong><span className="status" data-status={history.status}>{history.status}</span></p>
-                    {history.hrName && <p><strong>Name: </strong>{history.hrName}</p>}
-                    <p><strong>Changes Date Time: </strong>{format(new Date(history.changesDateTime), 'yyyy-MM-dd HH:mm:ss')}</p>
-                    <hr />
-                  </div>
-                ))}
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-outline-primary" onClick={closeModal}>Close</button>
+      <div className='container' >
+        <br></br>
+        <br></br>
+        <div className="row mb-3">
+          <div className="col-auto d-flex align-items-center">
+            <label htmlFor="startDate">Start Date:</label>
+            <input type="date" id="startDate" className='form-control' onChange={(e) => setStartDate(new Date(e.target.value))} />
+          </div>
+          <div className="col-auto d-flex align-items-center">
+            <label htmlFor="endDate">End Date:</label>
+            <input type="date" id="endDate" className='form-control' onChange={(e) => setEndDate(new Date(e.target.value))} />
+          </div>
+          <div className="col-auto">
+            <button className="btn btn-outline-info me-2" onClick={handleFilter}>Filter</button>
+            <button className="btn btn-outline-info me-2" onClick={handleClearFilter}>Clear Filter</button>
+            <button className="btn btn-outline-info" onClick={handleDownload} disabled={filteredEmployees.length === 0}>Download Filtered Data</button>
+          </div>
+        </div>
+        
+        <DataTable
+          columns={columns}
+          data={filteredEmployees}
+          pagination
+          // paginationServer
+          paginationPerPage={10}
+          paginationRowsPerPageOptions={[5, 10, 20]}
+          // paginationTotalRows={filteredEmployees.length}
+          // onChangePage={page => setCurrentPage(page)}
+          // onChangeRowsPerPage={perPage => setItemsPerPage(perPage)}
+          // highlightOnHover
+        />
+        {selectedEmployeeDetails && (
+          <div className="modal" style={{ display: showDetailsModal ? 'block' : 'none' }}>
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title text-center">Employee Details:</h5>
+                </div>
+                <div className="modal-body">
+                  <p><strong>Full Name:</strong> {selectedEmployeeDetails.fullName}</p>
+                  <p><strong>Email: </strong>{selectedEmployeeDetails.email}</p>
+                  <p><strong>Aadhar Number:</strong>  {selectedEmployeeDetails.aadhaarNumber}</p>
+                  <hr />
+                  {selectedEmployeeDetails.statusHistories && selectedEmployeeDetails.statusHistories.map((history, index) => (
+                    <div key={index}>
+                      <p><strong>Status: </strong><span className="status" data-status={history.status}>{history.status}</span></p>
+                      {history.hrName && <p><strong> Updated By: </strong>{history.hrName}</p>}
+                      <p><strong>Changes Date Time: </strong>{format(new Date(history.changesDateTime), 'yyyy-MM-dd HH:mm:ss')}</p>
+                      <hr />
+                    </div>
+                  ))}
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-outline-primary" onClick={closeModal}>Close</button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-      )}
-       <div className="d-flex justify-content-center">
-        <nav>
-          <ul className="pagination">
-            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-              <button className="page-link" onClick={() => paginate(currentPage - 1)}>Previous</button>
-            </li>
-            <li className="page-item disabled">
-              <span className="page-link">{currentPage}</span>
-            </li>
-            <li className={`page-item ${currentItems.length < itemsPerPage ? 'disabled' : ''}`}>
-              <button className="page-link" onClick={() => paginate(currentPage + 1)}>Next</button>
-            </li>
-          </ul>
-        </nav>
+        )}
+
       </div>
-    </div>
+
+    </>
   );
 
 };
 
 export default ApprovedStatusPage
+
+{/* <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '8px' }}>
+          <thead>
+            <tr>
+              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Name</th>
+              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Email</th>
+              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Job Profile</th>
+              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Mobile No</th>
+              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Register Date</th>
+              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Permanent Address</th>
+              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Gender</th>
+              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Remark By Hr</th>
+              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Remark By Manager</th>
+              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Remark Profile Screen</th>
+
+            </tr>
+          </thead>
+          <tbody>
+
+            {currentItems.map((employee) => (
+              <tr key={employee.id}>
+                <td>
+                  <button className='btn btn-link'
+                    onClick={() => showEmployeeDetails(employee.id)}>
+                    {employee.fullName}
+                  </button></td>
+                <td>{employee.email}</td>
+                <td>{employee.jobProfile}</td>
+                <td>{employee.mobileNo}</td>
+                <td>{formatDate(employee.creationDate)}</td>
+                <td>{employee.permanentAddress}</td>
+                <td>{employee.gender}</td>
+                <td>{employee.reMarksByHr}</td>
+                <td>{employee.reMarksByManager}</td>
+                <td>{employee.profileScreenRemarks}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table> */}
+        {/* <div className="d-flex justify-content-center">
+          <nav>
+            <ul className="pagination">
+              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <button className="page-link" onClick={() => paginate(currentPage - 1)}>Previous</button>
+              </li>
+              <li className="page-item disabled">
+                <span className="page-link">{currentPage}</span>
+              </li>
+              <li className={`page-item ${currentItems.length < itemsPerPage ? 'disabled' : ''}`}>
+                <button className="page-link" onClick={() => paginate(currentPage + 1)}>Next</button>
+              </li>
+            </ul>
+          </nav>
+        </div> */}

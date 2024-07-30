@@ -1,16 +1,15 @@
 
 /* NAVBAR STYLING */
 
-  .navbar {
+   /* .navbar {
     background-color: #2D4262;
     font-size: 18px;
     font-family: 'Lucida Sans';
     
-  }
+  } 
   
-  .link-button {
-  /* background-color: rgb(217, 217, 224); */
-  /* color: #FFF3B0; */
+  .link-button { 
+ 
   padding: 5px 10px;
   border-radius: 5px;
   text-decoration: none;
@@ -63,12 +62,12 @@
     background-color: #048ABF;
     border-radius: 5px;
     
-  }
+  }  */
   
   /* LOGIN STYLLING */
   /* index.css */
 
-  .auth-container {
+  /* .auth-container {
   max-width: 400px;
   margin: 20px auto;
   padding: 40px;
@@ -107,36 +106,28 @@
   button {
   padding: 8px;
   }
-  }
+  } */
   
 
   
   /* REGISTRATION STYLLING */
-  /* + */
   /* update user */
   
-  .auth-container {
-  /* max-width: 400px; */
-  /* margin: 20px auto; */
-  /* padding: 20px; */
+  /* .auth-container {
   border: 1px solid #ccc;
   border-radius: 5px;
   background-color: #f9f9f9;
   }
   
   .auth-container h2 {
-  /* margin-bottom: 20px; */
   font-size: 24px;
   color: #333;
   }
-  
-  /* .form-group {
-  margin-bottom: 15px;
-  } */
+
   
   .form-group label {
   display: block;
-  /* margin-bottom: 5px; */
+
   font-size: 16px;
   }
   
@@ -144,40 +135,27 @@
   .form-group input[type="email"],
   .form-group input[type="password"] {
   width: 100%;
-  /* padding: 8px; */
-  /* margin-bottom: 10px; */
-  border: 1px solid #ccc;
+  } */
+ 
+  /* border: 1px solid #ccc;
   border-radius: 3px;
   font-size: 16px;
-  }
+  } */
   
-  button[type="submit"] {
+  /* button[type="submit"] {
   border: none;
   font-size: 16px;
   cursor: pointer;
-  }
+  } */
 
   
-  
-  /* FOOTER STYKLING */
-   /* .footer{
-  background-color: rgb(0, 0, 0);
-  color: white;
-  padding: 20px;
-  text-align: center;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  }  */
-  
-  
-  
-  
+
+    
   
   
   /* PAGE NOT FOUND STYLING */
   /* index.css */
-  .not-found-container {
+  /* .not-found-container {
   max-width: 400px;
   margin: 0 auto;
   padding: 20px;
@@ -199,25 +177,19 @@
   .not-found-container {
   padding: 10px;
   }
-  }
+  } */
   
   /* ERROR STYLING */
-  .error-message {
+  /* .error-message {
   color: red;
   text-align: center;
   }
-  
+   */
   
   
   /*USER MANAGEMENT PAGE*/
-  .user-management-container {
-  /* max-width: 800px; */
-  /* margin: 0px auto 60px auto; */
-  /* padding: 20px; */
-  
-  }
-  
-  h2 {
+ 
+  /* h2 {
   text-align: center;
   margin-bottom: 30px;
   color: #333;
@@ -246,30 +218,20 @@
   background-color: #f2f2f2;
   }
   
-  /* button {
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  }
-   */
+  
   .reg-button {
   padding: 15px;
   margin: 10px auto;
   }
   
-  /* button:hover {
-  background-color: #0056b3;
-  } */
+ 
   
   .delete-button {
   background-color: rgb(255, 9, 9);
   color: white;
   margin-bottom: 10px;
   font-weight: 400;
-  }
+  } */
   
   
   /**PROFILE STYLING"
@@ -311,6 +273,8 @@
   }
   
 /* history popup styling */
+
+
 .modal-header,
 .modal-body,
 .modal-footer {
@@ -318,23 +282,23 @@
 }
 
 .status[data-status="Active"] {
-  color: green; /* Change color as per your requirement */
+  color: green;
 }
 .status[data-status="Reject"] {
-  color: red; /* Change color as per your requirement */
+  color: red; 
 }
 .status[data-status="Approve"] {
-  color: rgb(189, 186, 11); /* Change color as per your requirement */
+  color: rgb(189, 186, 11); 
 }
 
 .status[data-status="Scheduled"] {
-  color: rgb(189, 47, 11); /* Change color as per your requirement */
+  color: rgb(189, 47, 11); 
 }
 .status[data-status="ReScheduled"] {
-  color: rgb(61, 189, 11); /* Change color as per your requirement */
+  color: rgb(61, 189, 11);
 }
 
 .status[data-status="Select"] {
-  color: rgb(189, 47, 11); /* Change color as per your requirement */
+  color: rgb(189, 47, 11);
 }
 

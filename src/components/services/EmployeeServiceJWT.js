@@ -79,19 +79,21 @@ const axiosInstance = axios.create({
     return axiosInstance.get(`/${empDetailsInfoEndpoint}/${employeeId}`, authConfig());
   };
   
-  export const MrResponseSubmit = (employeeId, selectedResponse,mrUserName) => {
+  export const MrResponseSubmit = (employeeId, selectedResponse,mrUserName,managerRemarks) => {
     const url = `${REST_API_BASE_URL}/${employeeId}/mRResponse`;
     const data = { newStatus: selectedResponse,
-                   mrUserName: mrUserName                
+                   mrUserName: mrUserName ,
+                   managerRemarks:managerRemarks               
     };
     return axios.put(url, data, authConfig()); // Include authConfig() here to pass headers
   };
 
-  export const hrResponseSubmit = (employeeId, selectedResponse,hrUserName) => {
+  export const hrResponseSubmit = (employeeId, selectedResponse,hrUserName,profileScreenRemark) => {
     const url = `${REST_API_BASE_URL}/${employeeId}/hrResponse`;
     const data = { 
       newStatus: selectedResponse,
-      hrUserName:hrUserName
+      hrUserName:hrUserName,
+      profileScreenRemark:profileScreenRemark
     };
   
     return axios.put(url, data, authConfig());

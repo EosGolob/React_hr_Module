@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect ,useContext} from 'react'
 import { MrResponseSubmit, getEmployeeDetails,getlistOfManagerHdfcResponeField } from '../services/EmployeeServiceJWT';
 import { format } from 'date-fns';
 import { useUser } from '../auth/UserContext';
+import { AuthContext } from '../auth/AuthContext';
+import { useNavigate } from 'react-router-dom'; 
 
 const HdfcMrResponsePage = () => {
 
@@ -14,23 +16,15 @@ const HdfcMrResponsePage = () => {
   const [sortOrder, setSortOrder] = useState('asc'); 
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
-
   const [responseError, setResponseError] = useState('');
+  const [managerRemarks, setManagerRemarks] = useState({});
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     getAllEmployees();
-  }, [filterDate, sortOrder,currentPage]);
+  }, [filterDate, sortOrder,currentPage,employees]);
 
-
-  // function getAllEmployees() {
-  //   getlistOfManagerHdfcResponeField()
-  //     .then((response) => {
-  //       console.log('Response Data:', response.data);
-  //       setEmployees(response.data);
-  //     }).catch(error => {
-  //       console.error(error)
-  //     });
-  // }
 
   function getAllEmployees() {
     getlistOfManagerHdfcResponeField()
@@ -65,9 +59,16 @@ const HdfcMrResponsePage = () => {
     }));
   };
 
-
+  const handleRemarksChange = (e, employeeId) => {
+    const managerRemarks = e.target.value;
+    setManagerRemarks((prevRemarks) => ({
+      ...prevRemarks,
+      [employeeId]: managerRemarks
+    }));
+  };
   const handleHrResponseValue = (employeeId) => {
     const selectedValue = selectedResponse[employeeId];
+    const managerRemark = managerRemarks[employeeId];
     if (!selectedValue) {
       setResponseError('Please select a response');
       return;
@@ -77,8 +78,8 @@ const HdfcMrResponsePage = () => {
     const confirmSubmit = window.confirm('Are you sure you want to submit this response?');
     if (confirmSubmit) {
       // If user confirms, proceed with submission
-      window.location.reload();
-      MrResponseSubmit(employeeId, selectedValue, user.name)
+
+      MrResponseSubmit(employeeId, selectedValue, user.name ,managerRemark,)
         .then((response) => {
           console.log('Response from Backend:', response.data);
           setEmployees((prevEmployees) =>
@@ -145,7 +146,21 @@ const HdfcMrResponsePage = () => {
    // Change page
    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+
+   const handleLogout = (e) => {
+    e.preventDefault(); // Prevent the default anchor behavior
+    const confirmLogout = window.confirm('Are you sure you want to logout?');
+    if (confirmLogout) {
+        logout();
+        navigate('/');
+    }
+  };
   return (
+    <>
+     <div className="header">
+        <span className="pe-3">Friday, July 8, 2022 19:18:17</span>
+        <a className="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></a>
+      </div>
     <div className='container' style={{backgroundColor: '#A8DADC', minHeight: '100vh', padding: '20px', minWidth:'100%'}}>
        {responseError && <div className="alert alert-danger">{responseError}</div>} 
       <br></br>
@@ -176,6 +191,7 @@ const HdfcMrResponsePage = () => {
             <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Mobile No</th>
             <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Gender</th>
             <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Register Date</th>
+            <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center'}}>Remarks</th>
             <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Actions</th>
             <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Submit Response</th>
           </tr>
@@ -196,6 +212,15 @@ const HdfcMrResponsePage = () => {
               <td>{employee.mobileNo}</td>
               <td>{employee.gender}</td>
               <td>{new Date(employee.creationDate).toLocaleDateString()}</td>
+              <td>
+              <input
+                type="text"
+                className="form-control"
+                value={managerRemarks[employee.id] || ''}
+                onChange={(e) => handleRemarksChange(e, employee.id)}
+                placeholder="Enter remarks"
+              />
+              </td>
               <td>
                 <select className='form-select'
                   value={selectedResponse[employee.id] || ''}
@@ -240,7 +265,7 @@ const HdfcMrResponsePage = () => {
                 {selectedEmployeeDetails.statusHistories && selectedEmployeeDetails.statusHistories.map((history, index) => (
                   <div key={index}>
                     <p><strong>Status: </strong><span className="status" data-status={history.status}>{history.status}</span></p>
-                    <p><strong>Name: </strong>{history.hrName}</p>
+                    <p><strong> Updated By: </strong>{history.hrName}</p>
                     <p><strong>Changes DateTime: </strong>{format(new Date(history.changesDateTime), 'yyyy-MM-dd HH:mm:ss')}</p>
                     <hr />
                   </div>
@@ -254,6 +279,7 @@ const HdfcMrResponsePage = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 export default HdfcMrResponsePage

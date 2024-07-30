@@ -22,63 +22,114 @@ import MisResponsePage from './components/MISMRPAGE/MisMrResponsePage';
 import ApprovedStatusPage from './components/approvedEmpPage/ApprovedStatusPage';
 import RejectedStatusPage from './components/rejectedEmpPage/RejectedStatusPage';
 import { AuthContext } from './components/auth/AuthContext';
-import ImageSlider from './components/ImageSlider';
 import RejectedByHr from './components/hrrejected/RejectedByHr';
 import ManagerPageOnRoleType from './commonManagerPageOnRoleType/ManagerPageOnRoleType';
 
+
 function App() {
-  
+
   const { isAuthenticated, role } = useContext(AuthContext);
 
   return (
     <BrowserRouter>
       <div className='App'>
-        <Navbar />
-        <div className="content">
-          <Routes>
-            {/* <Route exact path="/" element={isAuthenticated ? <ProfilePage /> : <ImageSlider />} /> */}
-            <Route path="/" element={isAuthenticated ? <Navigate to="/profile" /> : <LoginPage />} />
-            <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />} />
-            {isAuthenticated && role === 'ADMIN' && (
-              <>
-                <Route path ='/profile-screening' element= {<HrInterviewResponse/>}/>
-                <Route path='/process-Selection' element={<EmployeeProcessSelection />} />
-                <Route path="/admin/user-management" element={<UserManagementPage />} />
-                <Route path="/approved" element={<ApprovedStatusPage />} />
-                <Route path="/rejected" element={<RejectedStatusPage />} />
-                <Route path="/update-user/:userId" element={<UpdateUser />} />
-                <Route path='/add-employee2' element={<EmployeeCreatePageComponent />} />
-                <Route path ='/addemp' element={<EmployeeCreateComponent></EmployeeCreateComponent>}/>
-                <Route path = '/hrRejectedEmpInfo' element ={<RejectedByHr/>}/>
-              </>
-            )}
-            {isAuthenticated && role === 'USER' && (
-              <>
-                <Route path="/hdfcmrpage" element={<HdfcMrResponsePage />} />
-              </>
-            )}
-            {isAuthenticated && role === 'HDFC' && (
-              <>
-                <Route path="/hdfcmrpage" element={<HdfcMrResponsePage />} />
-              </>
-            )}
-            {isAuthenticated && role === 'ICICI' && (
-              <>
-                <Route path="/icicimrpage" element={<IciciMrResponePage />} />
-              </>
-            )}
-            {isAuthenticated && role === 'MIS' && (
-              <>
-                <Route path="/mispage" element={<MisResponsePage />} />
-              </>
-            )}
-            <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} />} />
-          </Routes>
+        <div className='display-panel' >
+          {isAuthenticated && <Navbar />}
+          <div className="right-panel">
+            <Routes>
+              <Route path="/" element={isAuthenticated ? <Navigate to="/profile" /> : <LoginPage />} />
+              <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />} />
+              {isAuthenticated && role === 'ADMIN' && (
+                <>
+                  <Route path='/profile-screening' element={<HrInterviewResponse />} />
+                  <Route path='/process-Selection' element={<EmployeeProcessSelection />} />
+                  <Route path="/admin/user-management" element={<UserManagementPage />} />
+                  <Route path="/approved" element={<ApprovedStatusPage />} />
+                  <Route path="/rejected" element={<RejectedStatusPage />} />
+                  <Route path="/update-user/:userId" element={<UpdateUser />} />
+                  <Route path='/add-employee2' element={<EmployeeCreatePageComponent />} />
+                  <Route path='/addemp' element={<EmployeeCreateComponent></EmployeeCreateComponent>} />
+                  <Route path='/hrRejectedEmpInfo' element={<RejectedByHr />} />
+                </>
+              )}
+              {isAuthenticated && role === 'USER' && (
+                <>
+                  <Route path="/hdfcmrpage" element={<HdfcMrResponsePage />} />
+                  {/* <Route path="/comManger" element={<} /> */}
+                </>
+              )}
+              {isAuthenticated && role === 'HDFC' && (
+                <>
+                  <Route path="/hdfcmrpage" element={<HdfcMrResponsePage />} />
+                  {/* <Route path="/managerCommonPage" element={<ManagerPageOnRoleType />} /> */}
+                </>
+              )}
+              {isAuthenticated && role === 'ICICI' && (
+                <>
+                  <Route path="/icicimrpage" element={<IciciMrResponePage />} />
+                </>
+              )}
+              {isAuthenticated && role === 'MIS' && (
+                <>
+                  <Route path="/mispage" element={<MisResponsePage />} />
+                </>
+              )}
+              <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} />} />
+            </Routes>
+          </div>
         </div>
       </div>
-      {/* <FooterComponent /> */}
     </BrowserRouter>
   );
 }
 
 export default App;
+
+
+
+
+// {/* <div className='App'>
+//         <Navbar />
+//         <div className="content">
+//           <Routes>
+//             <Route path="/" element={isAuthenticated ? <Navigate to="/profile" /> : <LoginPage />} />
+//             <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />} />
+//             {isAuthenticated && role === 'ADMIN' && (
+//               <>
+//                 <Route path ='/profile-screening' element= {<HrInterviewResponse/>}/>
+//                 <Route path='/process-Selection' element={<EmployeeProcessSelection />} />
+//                 <Route path="/admin/user-management" element={<UserManagementPage />} />
+//                 <Route path="/approved" element={<ApprovedStatusPage />} />
+//                 <Route path="/rejected" element={<RejectedStatusPage />} />
+//                 <Route path="/update-user/:userId" element={<UpdateUser />} />
+//                 <Route path='/add-employee2' element={<EmployeeCreatePageComponent />} />
+//                 <Route path ='/addemp' element={<EmployeeCreateComponent></EmployeeCreateComponent>}/>
+//                 <Route path = '/hrRejectedEmpInfo' element ={<RejectedByHr/>}/>
+//               </>
+//             )}
+//             {isAuthenticated && role === 'USER' && (
+//               <>
+//                 <Route path="/hdfcmrpage" element={<HdfcMrResponsePage />} />
+//                 {/* <Route path="/comManger" element={<} /> */}
+//               </>
+//             )}
+//             {isAuthenticated && role === 'HDFC' && (
+//               <>
+//                 <Route path="/hdfcmrpage" element={<HdfcMrResponsePage />} />
+//                 {/* <Route path="/managerCommonPage" element={<ManagerPageOnRoleType />} /> */}
+//               </>
+//             )}
+//             {isAuthenticated && role === 'ICICI' && (
+//               <>
+//                 <Route path="/icicimrpage" element={<IciciMrResponePage />} />
+//               </>
+//             )}
+//             {isAuthenticated && role === 'MIS' && (
+//               <>
+//                 <Route path="/mispage" element={<MisResponsePage />} />
+//               </>
+//             )}
+//             <Route path="*" element={<Navigate to={isAuthenticated ? "/" : "/login"} />} />
+//           </Routes>
+//         </div>
+//       </div> */}
