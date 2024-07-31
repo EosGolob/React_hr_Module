@@ -49,6 +49,7 @@ const HdfcMrResponsePage = () => {
       });
   }
 
+ 
 
   const handleHrResponse = (e, employeeId) => {
     const selectedValue = e.target.value;
@@ -57,6 +58,7 @@ const HdfcMrResponsePage = () => {
       ...prevSelectedResponse,
       [employeeId]: selectedValue
     }));
+    setResponseError('');
   };
 
   const handleRemarksChange = (e, employeeId) => {
@@ -80,17 +82,17 @@ const HdfcMrResponsePage = () => {
       // If user confirms, proceed with submission
 
       MrResponseSubmit(employeeId, selectedValue, user.name ,managerRemark,)
-        .then((response) => {
+        .then(response => {
           console.log('Response from Backend:', response.data);
-          setEmployees((prevEmployees) =>
-            prevEmployees.map((emp) =>
+          setEmployees(prevEmployees =>
+            prevEmployees.map(emp =>
               emp.id === employeeId ? response.data : emp
             )
           );
           setShowDetailsModal(false);
-         
+          setResponseError('');
         })
-        .catch((error) => {
+        .catch(error => {
           console.error('Error submitting HR response:', error);
           // Handle error
         });
@@ -102,7 +104,7 @@ const HdfcMrResponsePage = () => {
 
   const showEmployeeDetails = (employeeId) => {
     getEmployeeDetails(employeeId)
-      .then((response) => {
+      .then(response => {
         if (response.data.length > 0) {
           const employeeDetails = response.data[0];
           console.log('Employee Details:', employeeDetails);
@@ -197,6 +199,7 @@ const HdfcMrResponsePage = () => {
           </tr>
         </thead>
         <tbody>
+        {/* {employees.map((employee) => ( */}
           {displayedEmployees.map((employee) => (
             <tr key={employee.id}>
               <td>

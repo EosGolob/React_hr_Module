@@ -5,7 +5,7 @@ import { useUser } from '../auth/UserContext';
 import { format } from 'date-fns';
 import DataTable from 'react-data-table-component';
 import { AuthContext } from '../auth/AuthContext';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate,Link } from 'react-router-dom'; 
 
 
 const RejectedStatusPage = () => {
@@ -25,10 +25,13 @@ const RejectedStatusPage = () => {
   const [selectionError, setSelectionError] = useState(false);
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate(); 
-
+  const [currentDateTime, setCurrentDateTime] = useState('')
   useEffect(() => {
     getAllEmployees();
     getAttendenedProcesses();
+    updateDateTime();
+    const intervalId = setInterval(updateDateTime, 1000); // Update every second
+    return () => clearInterval(intervalId);
   }, [token, filterDate, sortOrder, currentPage]);
 
   function getAllEmployees() {
@@ -160,6 +163,22 @@ const RejectedStatusPage = () => {
         navigate('/');
     }
 };
+
+const updateDateTime = () => {
+  const now = new Date();
+  const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+  };
+  const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
+  setCurrentDateTime(formattedDateTime);
+};
   const columns = [
     {
       name: 'Name',
@@ -237,8 +256,8 @@ const RejectedStatusPage = () => {
   return (
     <>
       <div class="header">
-        <span class="pe-3">Friday, July 8, 2022 19:18:17</span>
-        <a class="logout-btn" href="#" onClick={handleLogout}><i class="fas fa-power-off"></i></a>
+        <span class="pe-3">{currentDateTime}</span>
+        <Link class="logout-btn" href="#" onClick={handleLogout}><i class="fas fa-power-off"></i></Link>
       </div>
       <div className='container' >
         <div>
@@ -277,6 +296,26 @@ const RejectedStatusPage = () => {
           paginationTotalRows={employees.length}
           onChangePage={page => setCurrentPage(page)}
           onChangeRowsPerPage={rowsPerPage => setCurrentPage(1)}
+      
+          customStyles={{
+            headRow: {
+              style: {
+                backgroundColor: '#1C3657',
+              }
+            },
+            table: {
+              style: {
+                border: '1px solid #ddd',
+                width: '1500px'
+              }
+            },
+            headCells: {
+              style: {
+                color: 'white', // Change text color of header cells
+                fontSize: '11px' // Example: Adjust font size of header cells
+              }
+            }
+          }}
         />
         {selectedEmployeeDetails && (
           <div className="modal" style={{ display: showDetailsModal ? 'block' : 'none' }}>

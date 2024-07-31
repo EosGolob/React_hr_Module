@@ -7,9 +7,20 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(UsersService.isAuthenticated());
   const [role, setRole] = useState(UsersService.getRole());
 
+  // useEffect(() => {
+  //   setIsAuthenticated(UsersService.isAuthenticated());
+  //   setRole(UsersService.getRole());
+  // }, [isAuthenticated, role]);
   useEffect(() => {
-    setIsAuthenticated(UsersService.isAuthenticated());
-    setRole(UsersService.getRole());
+    const handleStorageChange = () => {
+      setIsAuthenticated(UsersService.isAuthenticated());
+      setRole(UsersService.getRole());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const login = (token, role) => {
@@ -20,6 +31,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
     UsersService.logout();
     setIsAuthenticated(false);
     setRole(null);

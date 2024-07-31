@@ -2,11 +2,12 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import UsersService from "../services/UsersService";
 import { AuthContext } from "../auth/AuthContext";
-import '../css/bootstrap.min.css';
-import '../css/layout.css';
+// import '../css/bootstrap.min.css';
+// import '../css/layout.css';
 // import '../css/style.css';
-import '../css/login.css';
+// import '../css/login.css';
 import img from '../img/logo-login.png';
+import bgImage from '../img/bg.jpg';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -39,45 +40,26 @@ function LoginPage() {
 
   return (
 
-    <div className="container" >
-      <div className="row align-items-center justify-content-center height-100vh">
+    <>
+      <div className="row align-items-center justify-content-center height-100vh"style={{ backgroundImage: `url(${bgImage})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover' }}>
       <div className="col-xl-3 text-center">
       <img src={img} alt="" width="180"/>
           {error && <p className="error-message">{error}</p>}
           <form onSubmit={handleSubmit}>
             <div className="mt-80px">
-              <input type="email" class="form-control" id="user" placeholder="User ID" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input type="text" class="form-control" id="user" placeholder="User ID" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="mt-35px">
               <input type="password" class="form-control" id="user" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
             <div className="mt-35px">
-              <button className="btn btn-primary" type="submit">Login</button>
+              <button className="btn btn-danger" type="submit">Login</button>
             </div>
           </form>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
 export default LoginPage;
-
-
-    // <div className="container" style={{backgroundColor: '#A8DADC', minHeight: '100vh', minWidth:'100%',overflow: 'hidden'}} >
-    //   <div className="auth-container" style={{backgroundColor: '#F1FAEE'}}>
-    //     <h2>Login</h2>
-    //     {error && <p className="error-message">{error}</p>}
-    //     <form onSubmit={handleSubmit}>
-    //       <div className="form-group">
-    //         <label>Email: </label>
-    //         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-    //       </div>
-    //       <div className="form-group">
-    //         <label>Password: </label>
-    //         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-    //       </div>
-    //       <button type="submit" style={{ backgroundColor: '#457B9D', marginLeft:'120px', color:'whitesmoke', padding:'5px 20px'}} >Login</button>
-    //     </form>
-    //   </div>
-    // </div>

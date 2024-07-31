@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import UsersService from '../services/UsersService';
-
+// import { AuthContext } from '../auth/AuthContext'; 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
@@ -30,3 +30,10 @@ export const UserProvider = ({ children }) => {
 export const useUser = () => {
     return useContext(UserContext);
 };
+// export const useUser = () => {
+//     const { isAuthenticated, role } = useContext(AuthContext);
+//     return {
+//       isAuthenticated,
+//       role,
+//     };
+// };

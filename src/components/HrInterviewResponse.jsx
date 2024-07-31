@@ -4,7 +4,8 @@ import { useUser } from './auth/UserContext';
 import { format } from 'date-fns';
 import DataTable from 'react-data-table-component';
 import { AuthContext } from '../components/auth/AuthContext';
-import { useNavigate } from 'react-router-dom';  
+import { useNavigate,Link } from 'react-router-dom';  
+import './HrInterviewResponse.css';
 
 const HrInterviewResponse = () => {
   const { user } = useUser();
@@ -20,9 +21,12 @@ const HrInterviewResponse = () => {
   const [profileScreenRemarks, setProfileScreenRemarks] = useState({});
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate(); 
-
+  const [currentDateTime, setCurrentDateTime] = useState('');
   useEffect(() => {
-    getAllEmployees();
+    getAllEmployees();    
+    updateDateTime();
+    const intervalId = setInterval(updateDateTime, 1000); // Update every second
+    return () => clearInterval(intervalId);
   }, [filterDate, sortOrder, currentPage, employees]);
 
 
@@ -136,29 +140,51 @@ const HrInterviewResponse = () => {
     setItemsPerPage(newItemsPerPage);
     setCurrentPage(1);
   };
+
+  
+  const updateDateTime = () => {
+    const now = new Date();
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    };
+    const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
+    setCurrentDateTime(formattedDateTime);
+};
   const columns = [
     {
       name: 'Name',
       selector: row => row.fullName,
       cell: row => <button className="btn btn-link" onClick={() => showEmployeeDetails(row.id)}>{row.fullName}</button>,
-      sortable: true
+      sortable: true,
+
     },
     {
       name: 'Email',
       selector: row => row.email,
-      sortable: true
+      sortable: true ,
+
     },
     {
-      name: 'Applied for job Profile',
-      selector: row => row.jobProfile
+      name: 'Applied for',
+      selector: row => row.jobProfile,
+
     },
     {
       name: 'Mobile No',
-      selector: row => row.mobileNo
+      selector: row => row.mobileNo,
+
     },
     {
       name: 'Permanent Address',
-      selector: row => row.permanentAddress
+      selector: row => row.permanentAddress,
+   
     },
     {
       name: 'Gender',
@@ -166,7 +192,8 @@ const HrInterviewResponse = () => {
     },
     {
       name: 'Register Date',
-      selector: row => new Date(row.creationDate).toLocaleDateString()
+      selector: row => new Date(row.creationDate).toLocaleDateString(),
+  
     },
     {
       name: 'Remarks',
@@ -178,7 +205,7 @@ const HrInterviewResponse = () => {
           onChange={(e) => handleRemarksChange(e, row.id)}
           placeholder="Enter remarks"
         />
-      )
+      ),
     },
     {
       name: 'Submit Response',
@@ -192,11 +219,11 @@ const HrInterviewResponse = () => {
           </select>
           
         </div>
-      )
+      ),
     },
     {
       name:'Action',
-      selector: row => <button className="btn btn-outline-info mt-2" onClick={() => handleHrResponseValue(row.id)}>Submit</button>
+      selector: row => <button className="btn btn-outline-info mt-2" onClick={() => handleHrResponseValue(row.id)}>Submit</button>,
     }
   
   ];
@@ -211,8 +238,8 @@ const HrInterviewResponse = () => {
   return (
     <>
     <div className="header">
-                <span className="pe-3">Friday, July 8, 2022 19:18:17</span>
-                <a className="logout-btn"onClick={handleLogout}><i class="fas fa-power-off"></i></a>
+                <span className="pe-3">{currentDateTime}</span>
+                <Link className="logout-btn"onClick={handleLogout}><i class="fas fa-power-off"></i></Link>
             </div>
     <div className='container'>
       <h2 className='text-center'></h2>
@@ -235,60 +262,6 @@ const HrInterviewResponse = () => {
           </button>
         </div>
       </div>
-
-      {/* <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '8px' }} >
-        <thead >
-          <tr>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Name</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Email</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Applied for job Profile</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Mobile No</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Permanent Address</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Gender</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Register Date</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Remarks</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Actions</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Submit Response</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentItems.map((employee) => (
-            <tr key={employee.id}>
-              <td>
-                <button className="btn btn-link"
-                  onClick={() => showEmployeeDetails(employee.id)}>
-                  {employee.fullName}
-                </button></td>
-              <td>{employee.email}</td>
-              <td>{employee.jobProfile}</td>
-              <td>{employee.mobileNo}</td>
-              <td>{employee.permanentAddress}</td>
-              <td>{employee.gender}</td>
-              <td>{new Date(employee.creationDate).toLocaleDateString()}</td>
-              <td>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={profileScreenRemarks[employee.id] || ''}
-                  onChange={(e) => handleRemarksChange(e, employee.id)}
-                  placeholder="Enter remarks"
-                />
-              </td>
-              <td>
-                <select className='form-select' style={{ padding: "2px 5px" }} value={selectedResponse[employee.id] || ''}
-                  onChange={(e) => handleHrResponse(e, employee.id)}>
-                  <option value="">Select response</option>
-                  <option value="Select">Select</option>
-                  <option value="Reject">Reject</option>
-                </select>
-              </td>
-              <td style={{ textAlign: 'center', }}>
-                <button className="btn btn-outline-info" onClick={() => handleHrResponseValue(employee.id)}>Submit</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table> */}
        <DataTable
         columns={columns}
         data={employees}
@@ -297,7 +270,26 @@ const HrInterviewResponse = () => {
         paginationRowsPerPageOptions={[10, 20, 50, 100]}
         paginationComponentOptions={{ noRowsPerPage: true }}
         striped
-        highlightOnHover
+        
+        customStyles={{
+          headRow: {
+            style: {
+              backgroundColor: '#1C3657',
+            }
+          },
+          table: {
+            style: {
+              border: '1px solid #ddd',
+              width: '1500px'
+            }
+          },
+          headCells: {
+            style: {
+              color: 'white', // Change text color of header cells
+              fontSize: '11px' // Example: Adjust font size of header cells
+            }
+          }
+        }}
       />
       {selectedEmployeeDetails && (
         <div className="modal" style={{ display: showDetailsModal ? 'block' : 'none' }}>

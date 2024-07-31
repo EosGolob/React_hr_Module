@@ -11,9 +11,13 @@ function ProfilePage() {
     const [profileInfo, setProfileInfo] = useState({});
     const { logout } = useContext(AuthContext);
     const navigate = useNavigate();
+    const [currentDateTime, setCurrentDateTime] = useState('');
 
     useEffect(() => {
         fetchProfileInfo();
+        updateDateTime();
+        const intervalId = setInterval(updateDateTime, 1000); // Update every second
+        return () => clearInterval(intervalId);
     }, []);
 
     const fetchProfileInfo = async () => {
@@ -36,26 +40,38 @@ function ProfilePage() {
             navigate('/');
         }
     };
+
+    const updateDateTime = () => {
+        const now = new Date();
+        const options = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        };
+        const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
+        setCurrentDateTime(formattedDateTime);
+    };
     return (
         <>
             <div className="header">
-                <span class="pe-3">Friday, July 8, 2022 19:18:17</span>
+            <span className="pe-3">{currentDateTime}</span>
                 <a class="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></a>
             </div>
-            <div className='container' >
-                <div class="dashboard-wrap">
-                    <div className="profile-page-container" style={{ backgroundColor: '#F1FAEE' }}>
-                        <h2>Login Profile Information</h2>
-                        <p><strong>Name:</strong> {profileInfo.name}</p>
-                        <p><strong>Email:</strong> {profileInfo.email}</p>
-                        <p><strong>City: </strong>{profileInfo.city}</p>
-                        <p><strong>Role: </strong>{profileInfo.role}</p>
-                        {/* {profileInfo.role === "ADMIN" && (
-                <button><Link to={`/update-user/${profileInfo.id}`}>Update This Profile</Link></button>
-            )} */}
-                    </div>
+            <div class="dashboard-wrap">
+                <div className="profile-page-container" >
+                    <h2>Login Profile Information</h2>
+                    <p><strong>Name:</strong> {profileInfo.name}</p>
+                    <p><strong>Emp ID:</strong> {profileInfo.email}</p>
+                    <p><strong>City: </strong>{profileInfo.city}</p>
+                    <p><strong>Role: </strong>{profileInfo.role}</p>
                 </div>
             </div>
+
         </>
     );
 }

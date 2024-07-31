@@ -1,10 +1,10 @@
 import React, { useState, useEffect,useRef,useContext} from 'react'
-import { gethrRejectedEmpList,updateEmployeeHrRejectedScreeningResponse } from '../services/EmployeeServiceJWT';
+import { gethrRejectedEmpList,updateEmployeeHrRejectedScreeningResponse,getEmployeeDetails } from '../services/EmployeeServiceJWT';
 import * as XLSX from 'xlsx';
 import {useUser} from '../auth/UserContext';
 import DataTable from 'react-data-table-component';
 import { AuthContext } from '../auth/AuthContext';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate,Link } from 'react-router-dom'; 
 
 const RejectedByHr = () => {
   const {user} = useUser();
@@ -15,9 +15,13 @@ const RejectedByHr = () => {
   const tableRef = useRef(null);
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate(); 
+  const [currentDateTime, setCurrentDateTime] = useState('');
 
   useEffect(() => {
     getAllEmployees();
+    updateDateTime();
+    const intervalId = setInterval(updateDateTime, 1000); // Update every second
+    return () => clearInterval(intervalId);
   }, []);
 
   
@@ -105,14 +109,32 @@ const handleHrResponseValue = (employeeId) => {
         navigate('/');
     }
 };
+
+
+const updateDateTime = () => {
+  const now = new Date();
+  const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+  };
+  const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
+  setCurrentDateTime(formattedDateTime);
+};
   const columns = [
     {
       name: 'Name',
-      cell: row => (
-        <button className='btn btn-link' onClick={() => showEmployeeDetails(row.id)}>
-          {row.fullName}
-        </button>
-      ),
+      // cell: row => (
+      //   // <button className='btn btn-link' onClick={() => showEmployeeDetails(row.id)}>
+      //     {row.fullName}
+      //   </button>
+      // ),
+      selector: row => row.fullName,
       sortable: true,
     },
     {
@@ -172,8 +194,8 @@ const handleHrResponseValue = (employeeId) => {
   return (
     <>
     <div class="header">
-                <span class="pe-3">Friday, July 8, 2022 19:18:17</span>
-                <a class="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></a>
+                <span class="pe-3">{currentDateTime}</span>
+                <Link class="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></Link>
             </div>
     <div className='container'>
       <br></br>
@@ -201,41 +223,27 @@ const handleHrResponseValue = (employeeId) => {
           pointerOnHover
           striped
           responsive
+          customStyles={{
+            headRow: {
+              style: {
+                backgroundColor: '#1C3657',
+              }
+            },
+            table: {
+              style: {
+                border: '1px solid #ddd',
+                width: '1500px'
+              }
+            },
+            headCells: {
+              style: {
+                color: 'white', // Change text color of header cells
+                fontSize: '11px' // Example: Adjust font size of header cells
+              }
+            }
+          }}
         />
       </div>
-      {/* <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '8px' }}>
-        <thead>
-          <tr>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Name</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Email</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Job Profile</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Mobile No</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Register Date</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Gender</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Remark By Hr</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Actions</th>
-
-          </tr>
-        </thead>
-        <tbody>
-              {filteredEmployees.map((employee) => (
-              <tr key={employee.id}>
-                <td>{employee.fullName}</td>
-                <td>{employee.email}</td>
-                <td>{employee.jobProfile}</td>
-                <td>{employee.mobileNo}</td>
-                <td>{formatDate(employee.creationDate)}</td>        
-                <td>{employee.gender}</td>
-                <td>{employee.profileScreenRemarks}</td>
-                <td style={{ textAlign: 'center', }}>
-                  <button   className="btn btn-outline-info"  onClick={() => handleHrResponseValue(employee.id)}>Screening</button>
-                </td>
-              
-              </tr>
-            ))}
-        </tbody>
-      </table> */}
-    {/* </div> */}
     </>
   );
   

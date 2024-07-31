@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
 import DataTable from 'react-data-table-component';
 import { AuthContext } from '../auth/AuthContext';
-import { useNavigate } from 'react-router-dom';  
+import { useNavigate,Link } from 'react-router-dom';  
 
 const ApprovedStatusPage = () => {
 
@@ -19,9 +19,13 @@ const ApprovedStatusPage = () => {
   const tableRef = useRef(null);
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate(); 
+  const [currentDateTime, setCurrentDateTime] = useState('');
 
   useEffect(() => {
     getAllEmployees();
+    updateDateTime();
+    const intervalId = setInterval(updateDateTime, 1000); // Update every second
+    return () => clearInterval(intervalId);
   }, []);
 
 
@@ -135,6 +139,21 @@ const handleLogout = (e) => {
       navigate('/');
   }
 };
+const updateDateTime = () => {
+  const now = new Date();
+  const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+  };
+  const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
+  setCurrentDateTime(formattedDateTime);
+};
 const columns = [
   {
     name: 'Name',
@@ -194,8 +213,8 @@ const columns = [
   return (
     <>
       <div className="header">
-        <span className="pe-3">Friday, July 8, 2022 19:18:17</span>
-        <a className="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></a>
+        <span className="pe-3">{currentDateTime}</span>
+        <Link className="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></Link>
       </div>
       <div className='container' >
         <br></br>
@@ -220,13 +239,28 @@ const columns = [
           columns={columns}
           data={filteredEmployees}
           pagination
-          // paginationServer
           paginationPerPage={10}
           paginationRowsPerPageOptions={[5, 10, 20]}
-          // paginationTotalRows={filteredEmployees.length}
-          // onChangePage={page => setCurrentPage(page)}
-          // onChangeRowsPerPage={perPage => setItemsPerPage(perPage)}
-          // highlightOnHover
+         
+          customStyles={{
+            headRow: {
+              style: {
+                backgroundColor: '#1C3657',
+              }
+            },
+            table: {
+              style: {
+                border: '1px solid #ddd',
+                width: '1500px'
+              }
+            },
+            headCells: {
+              style: {
+                color: 'white', // Change text color of header cells
+                fontSize: '11px' // Example: Adjust font size of header cells
+              }
+            }
+          }}
         />
         {selectedEmployeeDetails && (
           <div className="modal" style={{ display: showDetailsModal ? 'block' : 'none' }}>
@@ -267,56 +301,3 @@ const columns = [
 
 export default ApprovedStatusPage
 
-{/* <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '8px' }}>
-          <thead>
-            <tr>
-              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Name</th>
-              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Email</th>
-              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Job Profile</th>
-              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Mobile No</th>
-              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Register Date</th>
-              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Permanent Address</th>
-              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Gender</th>
-              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Remark By Hr</th>
-              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Remark By Manager</th>
-              <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Remark Profile Screen</th>
-
-            </tr>
-          </thead>
-          <tbody>
-
-            {currentItems.map((employee) => (
-              <tr key={employee.id}>
-                <td>
-                  <button className='btn btn-link'
-                    onClick={() => showEmployeeDetails(employee.id)}>
-                    {employee.fullName}
-                  </button></td>
-                <td>{employee.email}</td>
-                <td>{employee.jobProfile}</td>
-                <td>{employee.mobileNo}</td>
-                <td>{formatDate(employee.creationDate)}</td>
-                <td>{employee.permanentAddress}</td>
-                <td>{employee.gender}</td>
-                <td>{employee.reMarksByHr}</td>
-                <td>{employee.reMarksByManager}</td>
-                <td>{employee.profileScreenRemarks}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table> */}
-        {/* <div className="d-flex justify-content-center">
-          <nav>
-            <ul className="pagination">
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => paginate(currentPage - 1)}>Previous</button>
-              </li>
-              <li className="page-item disabled">
-                <span className="page-link">{currentPage}</span>
-              </li>
-              <li className={`page-item ${currentItems.length < itemsPerPage ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => paginate(currentPage + 1)}>Next</button>
-              </li>
-            </ul>
-          </nav>
-        </div> */}

@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { useUser } from './auth/UserContext';
 import DataTable from 'react-data-table-component';
 import { AuthContext } from '../components/auth/AuthContext';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate ,Link } from 'react-router-dom'; 
 import '../components/css/style.css';
 import '../components/css/layout.css';
 import '../components/css/fontawesome.css';
@@ -27,7 +27,8 @@ const EmployeeProcessSelection = () => {
   const [selectionError, setSelectionError] = useState(false);
   const [remarks, setRemarks] = useState({})
   const { logout } = useContext(AuthContext);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const [currentDateTime, setCurrentDateTime] = useState('') 
   useEffect(() => {
 
     if (!token) {
@@ -36,6 +37,9 @@ const EmployeeProcessSelection = () => {
       return;
     }
     getAllEmployees(token);
+    updateDateTime();
+    const intervalId = setInterval(updateDateTime, 1000); // Update every second
+    return () => clearInterval(intervalId);
   }, [token, filterDate, sortOrder, currentPage]);
 
 
@@ -180,6 +184,21 @@ const EmployeeProcessSelection = () => {
         navigate('/');
     }
 };
+const updateDateTime = () => {
+  const now = new Date();
+  const options = {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+  };
+  const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
+  setCurrentDateTime(formattedDateTime);
+};
   const columns = [
     {
       name: 'Name',
@@ -257,11 +276,10 @@ const EmployeeProcessSelection = () => {
 
       <>
       <div className="header">
-        <span className="pe-3">Friday, July 8, 2022 19:18:17</span>
-        <a className="logout-btn"onClick={handleLogout} ><i class="fas fa-power-off"></i></a>
+        <span className="pe-3">{currentDateTime}</span>
+        <Link className="logout-btn"onClick={handleLogout} ><i class="fas fa-power-off"></i></Link>
       </div>
       <div className="dashboard-wrap">
-      {/* <div className='container' > */}
         <div>
           {selectionError && <p className="alert alert-danger">Select process first</p>}
         </div>
@@ -295,7 +313,26 @@ const EmployeeProcessSelection = () => {
           paginationServer
           paginationTotalRows={employees.length}
           onChangePage={page => setCurrentPage(page)}
-          onChangeRowsPerPage={rowsPerPage => setCurrentPage(1)}
+          onChangeRowsPerPage={rowsPerPage => setCurrentPage(1)} 
+          customStyles={{
+            headRow: {
+              style: {
+                backgroundColor: '#1C3657',
+              }
+            },
+            table: {
+              style: {
+                border: '1px solid #ddd',
+                width: '1500px'
+              }
+            },
+            headCells: {
+              style: {
+                color: 'white', // Change text color of header cells
+                fontSize: '11px' // Example: Adjust font size of header cells
+              }
+            }
+          }}
         />
         {selectedEmployeeDetails && (
           <div className="modal" style={{ display: showDetailsModal ? 'block' : 'none' }}>
@@ -332,71 +369,3 @@ const EmployeeProcessSelection = () => {
 };
 
 export default EmployeeProcessSelection
-
-
-{/* <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '8px' }}>
-        <thead>
-          <tr>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Name</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Email</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Applied For Job Profile</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Mobile No</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Gender</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Register Date</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center'}}>Remarks</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>PROCESS</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>ACTION</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentEmployees.map((employee) => (
-            <tr key={employee.id}>
-              <td>
-                <button
-                  className="btn btn-link"
-                  onClick={() => showEmployeeDetails(employee.id)}
-                >
-                  {employee.fullName}
-                </button>
-              </td>
-
-              <td>{employee.email}</td>
-              <td>{employee.jobProfile}</td>
-              <td>{employee.mobileNo}</td>
-              <td>{employee.gender}</td>
-              <td>{new Date(employee.creationDate).toLocaleDateString()}</td>
-              <td> <input
-                  type="text"
-                  className="form-control"
-                  value={remarks[employee.id] || ''}
-                  onChange={(e) => handleRemarksChange(e, employee.id)}
-                /></td>   
-              <td>
-                <select className='form-select' style={{padding:"2px 5px"}} value={employee.selectedProcess || ''} onChange={(e) => handleProcessChange(e, employee.id)}>
-                  <option value="" disabled>Select Process</option>
-                  <option value="HDFC">HDFC</option>
-                  <option value="ICICI">ICICI</option>
-                  <option value="MIS">MIS</option>
-
-                </select>
-              </td>
-              <td style={{ textAlign: 'center', }}>
-                <button  className="btn btn-outline-info"  onClick={() => handleAddInterviewProcess(employee.id)}>Schedule</button>
-               
-              </td>
-
-            </tr>
-          ))}
-        </tbody>
-      </table> */}
-{/* <nav>
-        <ul className="pagination">
-          <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-            <button className="page-link" onClick={() => paginate(currentPage - 1)}>Previous</button>
-          </li>
-          <li className="page-item"><span className="page-link">{currentPage}</span></li>
-          <li className={`page-item ${currentEmployees.length < itemsPerPage ? 'disabled' : ''}`}>
-            <button className="page-link" onClick={() => paginate(currentPage + 1)}>Next</button>
-          </li>
-        </ul>
-      </nav> */}

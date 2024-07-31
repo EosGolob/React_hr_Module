@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { MrResponseSubmit, getEmployeeDetails, getListOfManagerResponseFieldOnRole } from '../components/services/EmployeeServiceJWT';
+import React, { useState, useEffect ,useContext} from 'react';
+import { MrResponseSubmit, getEmployeeDetails, getListOfManagerResponseFieldOnRole } from '../services/EmployeeServiceJWT';
 import { format } from 'date-fns';
-import { useUser } from '../components/auth/UserContext';
+import { useUser } from '../auth/UserContext';
+import { useNavigate,Link  } from 'react-router-dom'; 
+import { AuthContext } from '../auth/AuthContext';
 
 const ManagerPageOnRoleType = () => {
   const { user } = useUser();
   const [employees, setEmployees] = useState([]);
   const [selectedResponse, setSelectedResponse] = useState({});
+  const [managerRemarks, setManagerRemarks] = useState({});
   const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [filterDate, setFilterDate] = useState(null);
@@ -14,9 +17,25 @@ const ManagerPageOnRoleType = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
   const [responseError, setResponseError] = useState('');
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate(); 
+  
 
   useEffect(() => {
+    if (user && user.role) {
     getAllEmployees();
+    }else {
+      // Clear state when no user is logged in
+      setEmployees([]);
+      setSelectedResponse({});
+      setManagerRemarks({});
+      setSelectedEmployeeDetails(null);
+      setShowDetailsModal(false);
+      setFilterDate(null);
+      setSortOrder('asc');
+      setCurrentPage(1);
+      setResponseError('');
+    }
   }, [filterDate, sortOrder, currentPage, user]);
 
   function getAllEmployees() {
@@ -47,14 +66,23 @@ const ManagerPageOnRoleType = () => {
 
   const handleHrResponse = (e, employeeId) => {
     const selectedValue = e.target.value;
-    setSelectedResponse(prevSelectedResponse => ({
-      ...prevSelectedResponse,
-      [employeeId]: selectedValue
+      setSelectedResponse((prevSelectedResponse) => ({ 
+        ...prevSelectedResponse, 
+        [employeeId]: selectedValue 
+      }));
+    setResponseError('');
+  };
+  const handleRemarksChange = (e, employeeId) => {
+    const managerRemarks = e.target.value;
+    setManagerRemarks((prevRemarks) => ({
+      ...prevRemarks,
+      [employeeId]: managerRemarks
     }));
   };
 
   const handleHrResponseValue = (employeeId) => {
     const selectedValue = selectedResponse[employeeId];
+    const managerRemark = managerRemarks[employeeId];
     if (!selectedValue) {
       setResponseError('Please select a response');
       return;
@@ -62,21 +90,28 @@ const ManagerPageOnRoleType = () => {
 
     const confirmSubmit = window.confirm('Are you sure you want to submit this response?');
     if (confirmSubmit) {
-      window.location.reload();
-      MrResponseSubmit(employeeId, selectedValue, user.name)
+    
+      MrResponseSubmit(employeeId, selectedValue, user.name,managerRemark)
         .then((response) => {
           setEmployees(prevEmployees =>
             prevEmployees.map(emp =>
-              emp.id === employeeId ? response.data : emp
+              // emp.id === employeeId ? response.data : emp
+              emp.id === employeeId ? { ...emp, ...response.data } : emp
             )
           );
+          getAllEmployees(); 
           setShowDetailsModal(false);
+          setResponseError('');
         })
         .catch((error) => {
           console.error('Error submitting HR response:', error);
         });
+    }else {
+   
+      console.log('Submission cancelled by user.');
     }
   };
+
 
   const showEmployeeDetails = (employeeId) => {
     getEmployeeDetails(employeeId)
@@ -121,7 +156,30 @@ const ManagerPageOnRoleType = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const handleLogout = (e) => {
+    e.preventDefault(); // Prevent the default anchor behavior
+    const confirmLogout = window.confirm('Are you sure you want to logout?');
+    if (confirmLogout) {
+      setEmployees([]);
+      setSelectedResponse({});
+      setManagerRemarks({});
+      setSelectedEmployeeDetails(null);
+      setShowDetailsModal(false);
+      setFilterDate(null);
+      setSortOrder('asc');
+      setCurrentPage(1);
+      setResponseError('');
+
+      logout();
+      navigate('/');
+    }
+  };
   return (
+    <>
+    <div className="header">
+    <span className="pe-3">Friday, July 8, 2022 19:18:17</span>
+    <Link className="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></Link>
+  </div>
     <div className='container' style={{ backgroundColor: '#A8DADC', minHeight: '100vh', padding: '20px', minWidth: '100%' }}>
       {responseError && <div className="alert alert-danger">{responseError}</div>}
       <br></br>
@@ -152,6 +210,7 @@ const ManagerPageOnRoleType = () => {
             <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Mobile No</th>
             <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Gender</th>
             <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Register Date</th>
+            <th  style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center'}}>Remarks</th>
             <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Actions</th>
             <th style={{ fontFamily: 'sans-serif', backgroundColor: 'lightblue', textAlign: 'center' }}>Submit Response</th>
           </tr>
@@ -172,6 +231,15 @@ const ManagerPageOnRoleType = () => {
               <td>{employee.mobileNo}</td>
               <td>{employee.gender}</td>
               <td>{new Date(employee.creationDate).toLocaleDateString()}</td>
+            <td>
+            <input
+                type="text"
+                className="form-control"
+                value={managerRemarks[employee.id] || ''}
+                onChange={(e) => handleRemarksChange(e, employee.id)}
+                placeholder="Enter remarks"
+              />
+            </td>
               <td>
                 <select className='form-select'
                   value={selectedResponse[employee.id] || ''}
@@ -232,6 +300,7 @@ const ManagerPageOnRoleType = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
