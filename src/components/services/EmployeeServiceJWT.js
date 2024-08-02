@@ -17,7 +17,7 @@ const axiosInstance = axios.create({
 
   const isAuthenticated = () => {
     const token = localStorage.getItem('token');
-    return !!token; // Double negation to convert to boolean
+    return !!token; 
 };
 
   const authConfig = () => {

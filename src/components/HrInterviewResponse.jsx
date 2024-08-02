@@ -7,8 +7,9 @@ import { AuthContext } from '../components/auth/AuthContext';
 import { useNavigate,Link } from 'react-router-dom';  
 import './HrInterviewResponse.css';
 
-const HrInterviewResponse = () => {
-  const { user } = useUser();
+// const HrInterviewResponse = () => {
+  function HrInterviewResponse  ({role ,name}) {
+  // const { user } = useUser();
   const [employees, setEmployees] = useState([]);
   const [selectedResponse, setSelectedResponse] = useState({});
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -84,11 +85,11 @@ const HrInterviewResponse = () => {
   const handleHrResponseValue = (employeeId) => {
     const selectedValue = selectedResponse[employeeId];
     const profileScreenRemark = profileScreenRemarks[employeeId];
-    if (!selectedValue) {
-      setResponseError('Please select a response');
+    if (!selectedValue || !profileScreenRemark) {
+      setResponseError('Please fill all required fields');
       return;
     }
-    hrResponseSubmit(employeeId, selectedValue, user.name, profileScreenRemark)
+    hrResponseSubmit(employeeId, selectedValue, name, profileScreenRemark)
       .then(response => {
         setEmployees(prevEmployees =>
           prevEmployees.map(emp =>

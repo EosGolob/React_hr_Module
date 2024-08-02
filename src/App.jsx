@@ -21,7 +21,9 @@ import ManagerPageOnRoleType from './components/commonManagerPageOnRoleType/Mana
 
 function App() {
 
-  const { isAuthenticated, role } = useContext(AuthContext);
+  const { isAuthenticated, role,name} = useContext(AuthContext);
+  console.log("App comp page role ",role)
+  console.log("app comp page name",name)
   const displayPanelClass = isAuthenticated ? 'display-panel' : '';
 
   return (
@@ -36,15 +38,15 @@ function App() {
                 <Route path="/profile" element={<ProfilePage />} />
                 {role === 'ADMIN' && (
                   <>
-                    <Route path='/profile-screening' element={<HrInterviewResponse />} />
-                    <Route path='/process-Selection' element={<EmployeeProcessSelection />} />
+                    <Route path='/profile-screening' element={<HrInterviewResponse role={role} name={name} />} />
+                    <Route path='/process-Selection' element={<EmployeeProcessSelection name = {name}/>} />
                     <Route path="/admin/user-management" element={<UserManagementPage />} />
                     <Route path="/approved" element={<ApprovedStatusPage />} />
-                    <Route path="/rejected" element={<RejectedStatusPage />} />
+                    <Route path="/rejected" element={<RejectedStatusPage name = {name}/>} />
                     <Route path="/update-user/:userId" element={<UpdateUser />} />
                     <Route path='/add-employee2' element={<EmployeeCreatePageComponent />} />
                     <Route path='/addemp' element={<EmployeeCreateComponent />} />
-                    <Route path='/hrRejectedEmpInfo' element={<RejectedByHr />} />
+                    <Route path='/hrRejectedEmpInfo' element={<RejectedByHr name ={name} />} />
                   </>
                 )}
                 {role === 'USER' && (
@@ -52,22 +54,21 @@ function App() {
                 )}
                 {role === 'HDFC' && (
                   // <Route path="/hdfcmrpage" element={<HdfcMrResponsePage />} />
-                  <Route path = "/rolemrpage" element={<ManagerPageOnRoleType/>}/>
+                  <Route path = "/rolemrpage" element={<ManagerPageOnRoleType role={role} name={name}/>}/>
                 )}
                 {role === 'ICICI' && (
                   // <Route path="/icicimrpage" element={<IciciMrResponePage />} />
-                  <Route path = "/rolemrpage" element={<ManagerPageOnRoleType/>}/>
+                  <Route path = "/rolemrpage" element={<ManagerPageOnRoleType role={role} name={name} />}/>
                 )}
                 {role === 'MIS' && (
                   // <Route path="/mispage" element={<MisResponsePage />} />
-                  <Route path = "/rolemrpage" element={<ManagerPageOnRoleType/>}/>
+                  <Route path = "/rolemrpage" element={<ManagerPageOnRoleType role={role} name={name} />}/>
                 )}
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
             </div>
           </div>
         )}
-        {/* Show only login page when not authenticated */}
         {!isAuthenticated && <LoginPage />}
       </div>
     </BrowserRouter>

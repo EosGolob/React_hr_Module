@@ -6,7 +6,8 @@ import DataTable from 'react-data-table-component';
 import { AuthContext } from '../auth/AuthContext';
 import { useNavigate,Link } from 'react-router-dom'; 
 
-const RejectedByHr = () => {
+// const RejectedByHr = () => {
+  function RejectedByHr ({name}) {
   const {user} = useUser();
   const [employees, setEmployees] = useState([]);
   const [startDate, setStartDate] = useState(null);
@@ -87,11 +88,11 @@ const handleDownload = () => {
 };
  
 const handleHrResponseValue = (employeeId) => {
-    if (!user || !user.name) {
-        console.error('User information not available');
-        return;
-    }
-    updateEmployeeHrRejectedScreeningResponse(employeeId, null,user.name)
+    // if (!user || !user.name) {
+    //     console.error('User information not available');
+    //     return;
+    // }
+    updateEmployeeHrRejectedScreeningResponse(employeeId, null,name)
       .then(response => {
         console.log('Response from backend:', response.data);
         getAllEmployees();

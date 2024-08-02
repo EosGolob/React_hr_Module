@@ -21,11 +21,11 @@ function LoginPage() {
 
     try {
       const userData = await UsersService.login(email, password);
-      console.log(userData);
+      console.log("login page user data",userData);
 
       if (userData.token) {
-        login(userData.token, userData.role);
-        navigate('/');
+        login(userData.token, userData.role ,userData.name);
+        navigate('/profile');
       } else {
         setError(userData.message);
       }

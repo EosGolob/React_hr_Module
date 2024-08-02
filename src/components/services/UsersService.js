@@ -7,15 +7,38 @@ import axios from "axios";
 class UsersService{
     static BASE_URL = "http://localhost:8080"
 
-    static async login(email,password){
-        try{
-            const response = await axios.post(`${UsersService.BASE_URL}/auth/login`,{email,password})
+    // static async login(email,password){
+    //     try{
+    //         const response = await axios.post(`${UsersService.BASE_URL}/auth/login`,{email,password})
+            
+    //         return response.data;
+    //     }catch(err){
+    //         throw err;
+    //     }
+    // }
+    static async login(email, password) {
+        try {
+            const response = await axios.post(`${UsersService.BASE_URL}/auth/login`, { email, password });
+            console.log('API Response data for checking:', response.data);
+            
+            const { token, role, name } = response.data;
+            
+            if (name) {
+                localStorage.setItem('name', name);
+            } else {
+                console.warn('Name field is missing in response data.');
+            }
+            
+            localStorage.setItem('token', token);
+            localStorage.setItem('role', role);
+            
             return response.data;
-
-        }catch(err){
+        } catch (err) {
+            console.error('Error during login:', err);
             throw err;
         }
     }
+    
 
     static async register(userData,token){
         try{
@@ -52,9 +75,11 @@ class UsersService{
               headers:{Authorization:`Bearer ${token}`}
 
             })
+            console.log('API Response:', response);
             return response.data;
 
         }catch(err){
+            console.error('Error fetching profile:', err);
             throw err;
         }
     }
@@ -119,9 +144,11 @@ class UsersService{
     static getRole() {
         return localStorage.getItem('role');
     }
-    
+    static getName() {
+        return localStorage.getItem('name');
+      }
     static isUser(){
-        const role =  localStorage.getItem('role') 
+        const role =  localStorage.getItem('role')
         return role === 'USER'
     }
     static isHdfc(){
@@ -153,6 +180,7 @@ class UsersService{
     static misOnly(){
         return this.isAuthenticated() && this.isMis();
     }
+   
 }
 
 export default UsersService;

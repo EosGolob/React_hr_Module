@@ -10,8 +10,9 @@ import '../components/css/layout.css';
 import '../components/css/fontawesome.css';
 import '../components/css/bootstrap.min.css';
 
-const EmployeeProcessSelection = () => {
-  const { user } = useUser();
+// const EmployeeProcessSelection = () => {
+  function EmployeeProcessSelection ({name}) {
+  // const { user } = useUser();
   const [employees, setEmployees] = useState([]);
   // const [selectedProcess, setSelectedProcess] = useState([]);
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -83,7 +84,7 @@ const EmployeeProcessSelection = () => {
 
   const handleAddInterviewProcess = (employeeId) => {
     const employee = employees.find(emp => emp.id === employeeId);
-    if (!employee.selectedProcess) {
+    if (!employee.selectedProcess || !remarks[employeeId]) {
       setSelectionError(true);
       return; // Do not proceed with submission
     }
@@ -95,7 +96,8 @@ const EmployeeProcessSelection = () => {
       interviewDate: interviewDate,
       interviewTime: interviewTime,
       status: "Scheduled",
-      scheduledBy: user ? user.name : 'Unknown',
+      // scheduledBy: user ? user.name : 'Unknown',
+      scheduledBy:name,
       remarks: remarks[employeeId] || ''
     };
     selectInterviewProcess(employeeId, interviewData)
@@ -161,12 +163,28 @@ const EmployeeProcessSelection = () => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
+  // const handleRemarksChange = (e, employeeId) => {
+    // const value = e.target.value;
+    // setRemarks(prevRemarks => ({
+    //   ...prevRemarks,
+    //   [employeeId]: value
+    // }));
+  // };
+
   const handleRemarksChange = (e, employeeId) => {
     const value = e.target.value;
     setRemarks(prevRemarks => ({
       ...prevRemarks,
       [employeeId]: value
     }));
+    const inputElement = e.target;
+    inputElement.addEventListener('blur', () => {
+      if (!value) {
+        setSelectionError(true);
+      } else {
+        setSelectionError(false);
+      }
+    });
   };
 
   // Calculate current employees to display based on pagination
@@ -281,7 +299,7 @@ const updateDateTime = () => {
       </div>
       <div className="dashboard-wrap">
         <div>
-          {selectionError && <p className="alert alert-danger">Select process first</p>}
+          {selectionError && <p className="alert alert-danger">Please fill all required fields</p>}
         </div>
         {showAlert && (
           <div className="alert alert-success" role="alert">{alertMessage}

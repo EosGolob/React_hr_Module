@@ -8,9 +8,9 @@ import { AuthContext } from '../auth/AuthContext';
 import { useNavigate,Link } from 'react-router-dom'; 
 
 
-const RejectedStatusPage = () => {
-
-  const { user } = useUser();
+// const RejectedStatusPage = () => {
+  function RejectedStatusPage ({name}) {
+  // const { user } = useUser();
   const [employees, setEmployees] = useState([]);
   // const [selectedResponse, setSelectedResponse] = useState({});
   const [alertMessage, setAlertMessage] = useState('');
@@ -94,7 +94,8 @@ const RejectedStatusPage = () => {
       interviewDate: interviewDate,
       interviewTime: interviewTime,
       status: "ReScheduled",
-      scheduledBy: user ? user.name : 'Unknown',
+      // scheduledBy: user ? user.name : 'Unknown',
+      scheduledBy:name
 
     };
     selectInterviewProcess(employeeId, interviewData)
