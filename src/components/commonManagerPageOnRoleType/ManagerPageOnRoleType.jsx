@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { useUser } from '../auth/UserContext';
 import { useNavigate,Link} from 'react-router-dom'; 
 import { AuthContext } from '../auth/AuthContext';
-
+import './ManagerPageOnRoleType.css';
 function ManagerPageOnRoleType ({role,name}) {
   // const { user } = useUser();
  
@@ -20,12 +20,16 @@ function ManagerPageOnRoleType ({role,name}) {
   const [responseError, setResponseError] = useState('');
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate(); 
-  
-  console.log("Manager component page name " ,name);
-  console.log("Manager component page role " ,role);
+  const [currentDateTime, setCurrentDateTime] = useState('') 
+
+  // console.log("Manager component page name " ,name);
+  // console.log("Manager component page role " ,role);
   useEffect(() => {
     if (role) {
     getAllEmployees();
+    updateDateTime();
+    const intervalId = setInterval(updateDateTime, 1000); 
+    return () => clearInterval(intervalId);
     }
   }, [filterDate, sortOrder, currentPage,role]);
   // useEffect(() => {
@@ -198,6 +202,22 @@ function ManagerPageOnRoleType ({role,name}) {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const updateDateTime = () => {
+    const now = new Date();
+    const options = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+    };
+    const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
+    setCurrentDateTime(formattedDateTime);
+  };
+
   const handleLogout = (e) => {
     e.preventDefault(); // Prevent the default anchor behavior
     const confirmLogout = window.confirm('Are you sure you want to logout?');
@@ -219,7 +239,7 @@ function ManagerPageOnRoleType ({role,name}) {
   return (
     <>
     <div className="header">
-    <span className="pe-3">Friday, July 8, 2022 19:18:17</span>
+    <span className="pe-3">{currentDateTime}</span>
     <Link className="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></Link>
   </div>
     <div className='container'>
@@ -244,18 +264,18 @@ function ManagerPageOnRoleType ({role,name}) {
         </div>
       </div>
 
-      <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '8px' }}>
+      <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '10px' }}>
         <thead>
           <tr>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: '#1C3657', textAlign: 'center' }}>Name</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: '#1C3657', textAlign: 'center' }}>Email</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: '#1C3657', textAlign: 'center' }}>Job Profile</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: '#1C3657', textAlign: 'center' }}>Mobile No</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: '#1C3657', textAlign: 'center' }}>Gender</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: '#1C3657', textAlign: 'center' }}>Register Date</th>
-            <th  style={{fontFamily:'sans-serif',backgroundColor:'#1C3657',textAlign:'center'}}>Remarks</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: '#1C3657', textAlign: 'center' }}>Actions</th>
-            <th style={{ fontFamily: 'sans-serif', backgroundColor: '#1C3657', textAlign: 'center' }}>Submit Response</th>
+            <th style={{ fontFamily: 'sans-serif',fontSize:'12px', backgroundColor: '#1C3657', color: '#ffff',textAlign: 'center' }}>Name</th>
+            <th style={{ fontFamily: 'sans-serif',fontSize:'12px',  backgroundColor: '#1C3657', color: '#ffff', textAlign: 'center' }}>Email</th>
+            <th style={{ fontFamily: 'sans-serif',fontSize:'12px',  backgroundColor: '#1C3657',color: '#ffff',textAlign: 'center' }}>Job Profile</th>
+            <th style={{ fontFamily: 'sans-serif',fontSize:'12px',  backgroundColor: '#1C3657', color: '#ffff', textAlign: 'center' }}>Mobile No</th>
+            <th style={{ fontFamily: 'sans-serif',fontSize:'12px',  backgroundColor: '#1C3657', color: '#ffff',textAlign: 'center' }}>Gender</th>
+            <th style={{ fontFamily: 'sans-serif', fontSize:'12px', backgroundColor: '#1C3657',color: '#ffff', textAlign: 'center' }}>Register Date</th>
+            <th  style={{fontFamily:'sans-serif',fontSize:'12px', backgroundColor:'#1C3657', color: '#ffff',textAlign:'center'}}>Remarks</th>
+            <th style={{ fontFamily: 'sans-serif', fontSize:'12px', backgroundColor: '#1C3657', color: '#ffff', textAlign: 'center', width:'120px'}}>Actions</th>
+            <th style={{ fontFamily: 'sans-serif',fontSize:'12px',  backgroundColor: '#1C3657', color: '#ffff' , textAlign: 'center' }}>Submit Response</th>
           </tr>
         </thead>
         <tbody>
@@ -288,7 +308,7 @@ function ManagerPageOnRoleType ({role,name}) {
                   value={selectedResponse[employee.id] || ''}
                   onChange={(e) => handleHrResponse(e, employee.id)}
                 >
-                  <option value="">Select response</option>
+                  <option value=""disabled>Choose</option>
                   <option value="Select">Select</option>
                   <option value="Reject">Reject</option>
                 </select>
@@ -313,7 +333,7 @@ function ManagerPageOnRoleType ({role,name}) {
         </ul>
       </nav>
 
-      {selectedEmployeeDetails && (
+      {/* {selectedEmployeeDetails && (
         <div className="modal" style={{ display: showDetailsModal ? 'block' : 'none' }}>
           <div className="modal-dialog">
             <div className="modal-content">
@@ -341,7 +361,62 @@ function ManagerPageOnRoleType ({role,name}) {
             </div>
           </div>
         </div>
-      )}
+      )} */}
+
+{selectedEmployeeDetails && (
+          <div className="modal" style={{ display: showDetailsModal ? 'block' : 'none' }}>
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title text-center">Employee Details:</h5>
+                </div>
+                <div className="modal-body">
+                  <table>
+                    <tr>
+                      <th>Full Name</th>
+                      <td>{selectedEmployeeDetails.fullName}</td>
+                    </tr>
+                    <tr>
+                      <th>Email</th>
+                      <td>{selectedEmployeeDetails.email}</td>
+                    </tr>
+                    <tr>
+                      <th>Aadhar Number</th>
+                      <td>{selectedEmployeeDetails.aadhaarNumber}</td>
+                    </tr>
+                  </table>
+                  <hr />
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>status</th>
+                        <th>Remarks</th>
+                        <th>Updated By</th>
+                        <th>Changes Date Time</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedEmployeeDetails.statusHistories.map((history, index) => (
+                        <tr key={index}>
+                          <td>
+                            {history.status ? <span className="status" data-status={history.status}>{history.status}</span> : <span></span>}
+                          </td>
+                          {history.remarksOnEveryStages ? <td>{history.remarksOnEveryStages}</td> : <td></td>}
+                          {history.hrName ? <td>{history.hrName}</td> : <td></td>}
+                          <td>{format(new Date(history.changesDateTime), 'yyyy-MM-dd HH:mm:ss')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-outline-primary" onClick={closeModal}>Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        )}
     </div>
     </>
   );

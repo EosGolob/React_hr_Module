@@ -8,16 +8,17 @@ import { useNavigate,Link } from 'react-router-dom';
 
 // const RejectedByHr = () => {
   function RejectedByHr ({name}) {
-  const {user} = useUser();
+  // const {user} = useUser();
   const [employees, setEmployees] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
-  const tableRef = useRef(null);
+  // const tableRef = useRef(null);
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate(); 
   const [currentDateTime, setCurrentDateTime] = useState('');
-
+  const [submissionStatus, setSubmissionStatus] = useState('idle'); 
+  const [submissionError, setSubmissionError] = useState(null);
   useEffect(() => {
     getAllEmployees();
     updateDateTime();
@@ -25,7 +26,16 @@ import { useNavigate,Link } from 'react-router-dom';
     return () => clearInterval(intervalId);
   }, []);
 
-  
+  useEffect(() => {
+    let timeoutId;
+    if (submissionStatus === 'success') {
+      timeoutId = setTimeout(() => setSubmissionStatus('idle'), 2000); // Hide success message after 2 seconds
+    } else if (submissionStatus === 'error') {
+      timeoutId = setTimeout(() => setSubmissionError(null), 2000); // Hide error message after 2 seconds
+    }
+    return () => clearTimeout(timeoutId); // Cleanup timeout if component unmounts
+  }, [submissionStatus]);
+
   function getAllEmployees() {
     gethrRejectedEmpList()
       .then((response) => {
@@ -71,6 +81,10 @@ const handleClearFilter = () => {
 };
 
 const handleDownload = () => {
+  if (submissionStatus === 'pending') {
+    console.error('Please wait for previous submission to complete');
+    return;
+  }
   const filteredData = filteredEmployees.map(employee => ({
     Name: employee.fullName,
     Email: employee.email,
@@ -92,12 +106,16 @@ const handleHrResponseValue = (employeeId) => {
     //     console.error('User information not available');
     //     return;
     // }
+    setSubmissionStatus('pending');
     updateEmployeeHrRejectedScreeningResponse(employeeId, null,name)
       .then(response => {
+        setSubmissionStatus('success');
         console.log('Response from backend:', response.data);
         getAllEmployees();
       })
       .catch(error => {
+        setSubmissionStatus('error')
+        setSubmissionError(error.message)
         console.error('Error updating employee:', error);
       });
   };
@@ -168,16 +186,16 @@ const updateDateTime = () => {
       selector: row => row.gender,
       sortable: true,
     },
-    {
-      name: 'Remark By Hr',
-      selector: row => row.reMarksByHr,
-      sortable: true,
-    },
-    {
-      name: 'Remark By Manager',
-      selector: row => row.reMarksByManager,
-      sortable: true,
-    },
+    // {
+    //   name: 'Remark By Hr',
+    //   selector: row => row.reMarksByHr,
+    //   sortable: true,
+    // },
+    // {
+    //   name: 'Remark By Manager',
+    //   selector: row => row.reMarksByManager,
+    //   sortable: true,
+    // },
     {
       name: 'Remark Profile Screen',
       selector: row => row.profileScreenRemarks,
@@ -201,6 +219,18 @@ const updateDateTime = () => {
     <div className='container'>
       <br></br>
       <br></br>
+      
+      {submissionStatus === 'error' && (
+          <div className="alert alert-danger">
+            {submissionError}
+          </div>
+        )}
+        {submissionStatus === 'success' && (
+          <div className="alert alert-success">
+            Submission successful!
+          </div>
+        )}
+
       <div className="row mb-3">
         <div className="col-auto d-flex align-items-center">
           <label htmlFor="startDate">Start Date:</label>
@@ -233,7 +263,7 @@ const updateDateTime = () => {
             table: {
               style: {
                 border: '1px solid #ddd',
-                width: '1500px'
+                width: '1160px'
               }
             },
             headCells: {
@@ -244,7 +274,9 @@ const updateDateTime = () => {
             }
           }}
         />
+    
       </div>
+      {/* </div> */}
     </>
   );
   

@@ -1,12 +1,12 @@
 import React, { useState, useEffect,useContext } from 'react'
 import { getlistOfRejectedEmpList, selectInterviewProcess, getEmployeeDetails } from '../services/EmployeeServiceJWT';
 import { getAttendenedInterview } from '../services/InterviewServiceJWT';
-import { useUser } from '../auth/UserContext';
+// import { useUser } from '../auth/UserContext';
 import { format } from 'date-fns';
 import DataTable from 'react-data-table-component';
 import { AuthContext } from '../auth/AuthContext';
 import { useNavigate,Link } from 'react-router-dom'; 
-
+import './RejectedStatusPage.css'
 
 // const RejectedStatusPage = () => {
   function RejectedStatusPage ({name}) {
@@ -16,7 +16,7 @@ import { useNavigate,Link } from 'react-router-dom';
   const [alertMessage, setAlertMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token'));
-  const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState([]);
+  const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState('');
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [filterDate, setFilterDate] = useState(null); // State for filter date
   const [sortOrder, setSortOrder] = useState('asc');
@@ -26,13 +26,21 @@ import { useNavigate,Link } from 'react-router-dom';
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate(); 
   const [currentDateTime, setCurrentDateTime] = useState('')
+ 
   useEffect(() => {
-    getAllEmployees();
-    getAttendenedProcesses();
+    // getAllEmployees();
+    // getAttendenedProcesses();
+    fetchData();
     updateDateTime();
     const intervalId = setInterval(updateDateTime, 1000); // Update every second
     return () => clearInterval(intervalId);
   }, [token, filterDate, sortOrder, currentPage]);
+
+
+  const fetchData = () => {
+    getAllEmployees();
+    getAttendenedProcesses();
+  };
 
   function getAllEmployees() {
     getlistOfRejectedEmpList()
@@ -100,7 +108,8 @@ import { useNavigate,Link } from 'react-router-dom';
     };
     selectInterviewProcess(employeeId, interviewData)
       .then(response => {
-        window.location.reload();
+        // window.location.reload();
+        fetchData();
         setAlertMessage("Interview Process assigned succussfully");
         // setAlertType("success");
         setShowAlert(true);
@@ -213,28 +222,33 @@ const updateDateTime = () => {
       name: 'Register Date',
       selector: row => new Date(row.creationDate).toLocaleDateString(),
     },
+    // {
+    //   name: 'Remark By Hr',
+    //   selector: row => row.reMarksByHr,
+    // },
+    // {
+    //   name: 'Remark By Manager',
+    //   selector: row => row.reMarksByManager,
+    // },
+    // {
+    //   name: 'Remark Profile Screen',
+    //   selector: row => row.profileScreenRemarks,
+    // },
     {
-      name: 'Remark By Hr',
-      selector: row => row.reMarksByHr,
-    },
-    {
-      name: 'Remark By Manager',
-      selector: row => row.reMarksByManager,
-    },
-    {
-      name: 'Remark Profile Screen',
-      selector: row => row.profileScreenRemarks,
-    },
-    {
-      name: 'Re Interview',
+      name: 'Re-Schedule',
       selector: row => (
         <select
           className='form-select'
-          style={{ padding: "2px 5px" }}
+          style={{
+            padding: "10px 15px", // Adjust padding for overall size
+            fontSize: "14px",      
+            height: "40px",        // Increase height if needed
+            width: "100px" 
+           }}
           value={row.selectedProcess || ''}
           onChange={(e) => handleProcessChange(e, row.id)}
         >
-          <option value="" disabled>Select Process</option>
+          <option value="" disabled>Select</option>
           <option value="HDFC">HDFC</option>
           <option value="ICICI">ICICI</option>
           <option value="MIS">MIS</option>
@@ -307,7 +321,7 @@ const updateDateTime = () => {
             table: {
               style: {
                 border: '1px solid #ddd',
-                width: '1500px'
+                width: '1150px'
               }
             },
             headCells: {
@@ -326,9 +340,10 @@ const updateDateTime = () => {
                   <h5 className="modal-title">Employee Details:</h5>
                 </div>
                 <div className="modal-body">
-                  <p><strong>Full Name:</strong> {selectedEmployeeDetails.fullName}</p>
+                  {/* <p><strong>Full Name:</strong> {selectedEmployeeDetails.fullName}</p>
                   <p><strong>Email: </strong>{selectedEmployeeDetails.email}</p>
                   <p><strong>Aadhar Number:</strong>  {selectedEmployeeDetails.aadhaarNumber}</p>
+                  <p><strong>Manager Remarks: </strong>{selectedEmployeeDetails.reMarksByManager}</p>
                   <hr />
 
                   {selectedEmployeeDetails.statusHistories && selectedEmployeeDetails.statusHistories.map((history, index) => (
@@ -338,7 +353,65 @@ const updateDateTime = () => {
                       <p><strong>Changes DateTime: </strong>{format(new Date(history.changesDateTime), 'yyyy-MM-dd HH:mm:ss')}</p>
                       <hr />
                     </div>
-                  ))}
+                  ))} */}
+                  <table>
+                    <tr>
+                      <th>Full Name</th>
+                      <td>{selectedEmployeeDetails.fullName}</td>
+                    </tr>
+                    <tr>
+                      <th>Email</th>
+                      <td>{selectedEmployeeDetails.email}</td>
+                    </tr>
+                    <tr>
+                      <th>Aadhar Number</th>
+                      <td>{selectedEmployeeDetails.aadhaarNumber}</td>
+                    </tr>
+                  </table>
+                  <hr />
+               
+                  {/* {selectedEmployeeDetails.statusHistories && (
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>status</th>
+                          <th>Updated By</th>
+                          <th>Changes Date Time</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedEmployeeDetails.statusHistories.map((history, index) => (
+                          <tr key={index}>
+                            <td><span className="status" data-status={history.status}>{history.status}</span></td>
+                            {history.hrName && <td>{history.hrName}</td>}
+                            <td>{format(new Date(history.changesDateTime), 'yyyy-MM-dd HH:mm:ss')}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )} */}
+                   <table>
+                    <thead>
+                      <tr>
+                        <th>status</th>
+                        <th>Remarks</th>
+                        <th>Updated By</th>
+                        <th>Changes Date Time</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedEmployeeDetails.statusHistories.map((history, index) => (
+                        <tr key={index}>
+                          <td>
+                            {history.status ? <span className="status" data-status={history.status}>{history.status}</span> : <span></span>}
+                          </td>
+                          {history.remarksOnEveryStages ? <td>{history.remarksOnEveryStages}</td> : <td></td>}
+                          {history.hrName ? <td>{history.hrName}</td> : <td></td>}
+                          <td>{format(new Date(history.changesDateTime), 'yyyy-MM-dd HH:mm:ss')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-outline-primary" onClick={closeModal}>Close</button>

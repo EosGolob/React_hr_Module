@@ -22,8 +22,6 @@ import ManagerPageOnRoleType from './components/commonManagerPageOnRoleType/Mana
 function App() {
 
   const { isAuthenticated, role,name} = useContext(AuthContext);
-  console.log("App comp page role ",role)
-  console.log("app comp page name",name)
   const displayPanelClass = isAuthenticated ? 'display-panel' : '';
 
   return (
@@ -47,6 +45,7 @@ function App() {
                     <Route path='/add-employee2' element={<EmployeeCreatePageComponent />} />
                     <Route path='/addemp' element={<EmployeeCreateComponent />} />
                     <Route path='/hrRejectedEmpInfo' element={<RejectedByHr name ={name} />} />
+                    
                   </>
                 )}
                 {role === 'USER' && (

@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef,useContext } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import { getEmployeeDetails, getlistOfApprovedEmpList } from '../services/EmployeeServiceJWT';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
 import DataTable from 'react-data-table-component';
 import { AuthContext } from '../auth/AuthContext';
-import { useNavigate,Link } from 'react-router-dom';  
-
+import { useNavigate, Link } from 'react-router-dom';
+import './Approve.css';
 const ApprovedStatusPage = () => {
 
   const [employees, setEmployees] = useState([]);
@@ -13,12 +13,12 @@ const ApprovedStatusPage = () => {
   const [endDate, setEndDate] = useState(null);
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState([]);
+  const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const tableRef = useRef(null);
   const { logout } = useContext(AuthContext);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [currentDateTime, setCurrentDateTime] = useState('');
 
   useEffect(() => {
@@ -130,18 +130,18 @@ const ApprovedStatusPage = () => {
     setItemsPerPage(newItemsPerPage);
     setCurrentPage(1); // Reset to first page when changing items per page
   };
-// Define columns for DataTable
-const handleLogout = (e) => {
-  e.preventDefault(); // Prevent the default anchor behavior
-  const confirmLogout = window.confirm('Are you sure you want to logout?');
-  if (confirmLogout) {
+  // Define columns for DataTable
+  const handleLogout = (e) => {
+    e.preventDefault(); // Prevent the default anchor behavior
+    const confirmLogout = window.confirm('Are you sure you want to logout?');
+    if (confirmLogout) {
       logout();
       navigate('/');
-  }
-};
-const updateDateTime = () => {
-  const now = new Date();
-  const options = {
+    }
+  };
+  const updateDateTime = () => {
+    const now = new Date();
+    const options = {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -150,66 +150,66 @@ const updateDateTime = () => {
       minute: '2-digit',
       second: '2-digit',
       hour12: false,
+    };
+    const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
+    setCurrentDateTime(formattedDateTime);
   };
-  const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
-  setCurrentDateTime(formattedDateTime);
-};
-const columns = [
-  {
-    name: 'Name',
-    selector: row => (
-      <button className='btn btn-link' onClick={() => showEmployeeDetails(row.id)}>
-        {row.fullName}
-      </button>
-    ),
-    sortable: true,
-  },
-  {
-    name: 'Email',
-    selector: row => row.email,
-    sortable: true,
-  },
-  {
-    name: 'Job Profile',
-    selector: row => row.jobProfile,
-    sortable: true,
-  },
-  {
-    name: 'Mobile No',
-    selector: row => row.mobileNo,
-    sortable: true,
-  },
-  {
-    name: 'Register Date',
-    selector: row => formatDate(row.creationDate),
-    sortable: true,
-  },
-  {
-    name: 'Permanent Address',
-    selector: row => row.permanentAddress,
-    sortable: true,
-  },
-  {
-    name: 'Gender',
-    selector: row => row.gender,
-    sortable: true,
-  },
-  {
-    name: 'Remark By Hr',
-    selector: row => row.reMarksByHr,
-    sortable: true,
-  },
-  {
-    name: 'Remark By Manager',
-    selector: row => row.reMarksByManager,
-    sortable: true,
-  },
-  {
-    name: 'Remark Profile Screen',
-    selector: row => row.profileScreenRemarks,
-    sortable: true,
-  },
-];
+  const columns = [
+    {
+      name: 'Name',
+      selector: row => (
+        <button className='btn btn-link' onClick={() => showEmployeeDetails(row.id)}>
+          {row.fullName}
+        </button>
+      ),
+      sortable: true,
+    },
+    {
+      name: 'Email',
+      selector: row => row.email,
+      sortable: true,
+    },
+    {
+      name: 'Job Profile',
+      selector: row => row.jobProfile,
+      sortable: true,
+    },
+    {
+      name: 'Mobile No',
+      selector: row => row.mobileNo,
+      sortable: true,
+    },
+    {
+      name: 'Register Date',
+      selector: row => formatDate(row.creationDate),
+      sortable: true,
+    },
+    {
+      name: 'Permanent Address',
+      selector: row => row.permanentAddress,
+      sortable: true,
+    },
+    {
+      name: 'Gender',
+      selector: row => row.gender,
+      sortable: true,
+    },
+    // {
+    //   name: 'Remark By Hr',
+    //   selector: row => row.reMarksByHr,
+    //   sortable: true,
+    // },
+    // {
+    //   name: 'Remark By Manager',
+    //   selector: row => row.reMarksByManager,
+    //   sortable: true,
+    // },
+    // {
+    //   name: 'Remark Profile Screen',
+    //   selector: row => row.profileScreenRemarks,
+    //   sortable: true,
+    // },
+  ];
   return (
     <>
       <div className="header">
@@ -234,14 +234,14 @@ const columns = [
             <button className="btn btn-outline-info" onClick={handleDownload} disabled={filteredEmployees.length === 0}>Download Filtered Data</button>
           </div>
         </div>
-        
+
         <DataTable
           columns={columns}
           data={filteredEmployees}
           pagination
           paginationPerPage={10}
           paginationRowsPerPageOptions={[5, 10, 20]}
-         
+
           customStyles={{
             headRow: {
               style: {
@@ -251,7 +251,7 @@ const columns = [
             table: {
               style: {
                 border: '1px solid #ddd',
-                width: '1500px'
+                width: '1150px'
               }
             },
             headCells: {
@@ -270,18 +270,43 @@ const columns = [
                   <h5 className="modal-title text-center">Employee Details:</h5>
                 </div>
                 <div className="modal-body">
-                  <p><strong>Full Name:</strong> {selectedEmployeeDetails.fullName}</p>
-                  <p><strong>Email: </strong>{selectedEmployeeDetails.email}</p>
-                  <p><strong>Aadhar Number:</strong>  {selectedEmployeeDetails.aadhaarNumber}</p>
+                  <table>
+                    <tr>
+                      <th>Full Name</th>
+                      <td>{selectedEmployeeDetails.fullName}</td>
+                    </tr>
+                    <tr>
+                      <th>Email</th>
+                      <td>{selectedEmployeeDetails.email}</td>
+                    </tr>
+                    <tr>
+                      <th>Aadhar Number</th>
+                      <td>{selectedEmployeeDetails.aadhaarNumber}</td>
+                    </tr>
+                  </table>
                   <hr />
-                  {selectedEmployeeDetails.statusHistories && selectedEmployeeDetails.statusHistories.map((history, index) => (
-                    <div key={index}>
-                      <p><strong>Status: </strong><span className="status" data-status={history.status}>{history.status}</span></p>
-                      {history.hrName && <p><strong> Updated By: </strong>{history.hrName}</p>}
-                      <p><strong>Changes Date Time: </strong>{format(new Date(history.changesDateTime), 'yyyy-MM-dd HH:mm:ss')}</p>
-                      <hr />
-                    </div>
-                  ))}
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>status</th>
+                        <th>Remarks</th>
+                        <th>Updated By</th>
+                        <th>Changes Date Time</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedEmployeeDetails.statusHistories.map((history, index) => (
+                        <tr key={index}>
+                          <td>
+                            {history.status ? <span className="status" data-status={history.status}>{history.status}</span> : <span></span>}
+                          </td>
+                          {history.remarksOnEveryStages ? <td>{history.remarksOnEveryStages}</td> : <td></td>}
+                          {history.hrName ? <td>{history.hrName}</td> : <td></td>}
+                          <td>{format(new Date(history.changesDateTime), 'yyyy-MM-dd HH:mm:ss')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
                 <div className="modal-footer">
                   <button type="button" className="btn btn-outline-primary" onClick={closeModal}>Close</button>

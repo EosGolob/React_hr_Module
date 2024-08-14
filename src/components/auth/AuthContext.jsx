@@ -35,7 +35,8 @@ export const AuthProvider = ({ children }) => {
     console.log("auth login function page name" ,name);
     console.log("auth login function page role ",role);
   };
-  
+
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');

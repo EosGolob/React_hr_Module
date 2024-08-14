@@ -23,6 +23,10 @@ import './HrInterviewResponse.css';
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate(); 
   const [currentDateTime, setCurrentDateTime] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [messageTimeoutId, setMessageTimeoutId] = useState(null);
+
+
   useEffect(() => {
     getAllEmployees();    
     updateDateTime();
@@ -82,27 +86,69 @@ import './HrInterviewResponse.css';
     }));
   };
 
+  // const handleHrResponseValue = (employeeId) => {
+  //   const selectedValue = selectedResponse[employeeId];
+  //   const profileScreenRemark = profileScreenRemarks[employeeId];
+  //   if (!selectedValue || !profileScreenRemark) {
+  //     setResponseError('Please fill all required fields');
+  //     setSuccessMessage('');
+  //     return;
+  //   }
+  //   hrResponseSubmit(employeeId, selectedValue, name, profileScreenRemark)
+  //     .then(response => {
+  //       setEmployees(prevEmployees =>
+  //         prevEmployees.map(emp =>
+  //           emp.id === employeeId ? response.data : emp
+  //         )
+  //       );
+  //       setSuccessMessage('Response submitted successfully!');
+  //       setResponseError('');
+  //     })
+  //     .catch(error => {
+  //       console.error('Error submitting HR response:', error);
+  //       setResponseError('Failed to submit response. Please try again.');
+  //       setSuccessMessage('')
+  //     });
+  // };
   const handleHrResponseValue = (employeeId) => {
     const selectedValue = selectedResponse[employeeId];
     const profileScreenRemark = profileScreenRemarks[employeeId];
+
     if (!selectedValue || !profileScreenRemark) {
       setResponseError('Please fill all required fields');
+      setSuccessMessage('');
       return;
     }
-    hrResponseSubmit(employeeId, selectedValue, name, profileScreenRemark)
-      .then(response => {
-        setEmployees(prevEmployees =>
-          prevEmployees.map(emp =>
-            emp.id === employeeId ? response.data : emp
-          )
-        );
-        // window.location.reload();
-      })
-      .catch(error => {
-        console.error('Error submitting HR response:', error);
-      });
-  };
 
+    // Clear any existing timeout
+    if (messageTimeoutId) {
+      clearTimeout(messageTimeoutId);
+    }
+    
+  hrResponseSubmit(employeeId, selectedValue, name, profileScreenRemark)
+  .then(response => {
+    setEmployees(prevEmployees =>
+      prevEmployees.map(emp =>
+        emp.id === employeeId ? response.data : emp
+      )
+    );
+    setSuccessMessage('Response submitted successfully!');
+    setResponseError('');
+    const timeoutId = setTimeout(() => {
+      setSuccessMessage('');
+    }, 2000); // Hide success message after 2 seconds
+    setMessageTimeoutId(timeoutId);
+  })
+  .catch(error => {
+    console.error('Error submitting HR response:', error);
+    setResponseError('Failed to submit response. Please try again.');
+    setSuccessMessage('');
+    const timeoutId = setTimeout(() => {
+      setResponseError('');
+    }, 2000); // Hide error message after 2 seconds
+    setMessageTimeoutId(timeoutId);
+  });
+};
   const showEmployeeDetails = (employeeId) => {
     getEmployeeDetails(employeeId)
       .then((response) => {
@@ -209,12 +255,12 @@ import './HrInterviewResponse.css';
       ),
     },
     {
-      name: 'Submit Response',
+      name: 'Action',
       cell: row => (
         <div>
-          <select className='form-select' style={{ padding: "2px 5px" }} value={selectedResponse[row.id] || ''}
+          <select className='form-select' value={selectedResponse[row.id] || ''}
             onChange={(e) => handleHrResponse(e, row.id)}>
-            <option value="">Select response</option>
+            <option value="" disabled>Choose</option>
             <option value="Select">Select</option>
             <option value="Reject">Reject</option>
           </select>
@@ -245,6 +291,7 @@ import './HrInterviewResponse.css';
     <div className='container'>
       <h2 className='text-center'></h2>
       {responseError && <div className="alert alert-danger">{responseError}</div>}
+      {successMessage && <div className="alert alert-success">{successMessage}</div>} {/* Success message */}
       <br />
 
       <div className="row mb-3">
@@ -263,6 +310,7 @@ import './HrInterviewResponse.css';
           </button>
         </div>
       </div>
+
        <DataTable
         columns={columns}
         data={employees}
@@ -281,7 +329,7 @@ import './HrInterviewResponse.css';
           table: {
             style: {
               border: '1px solid #ddd',
-              width: '1500px'
+              width: '1600px'
             }
           },
           headCells: {
@@ -292,6 +340,7 @@ import './HrInterviewResponse.css';
           }
         }}
       />
+
       {selectedEmployeeDetails && (
         <div className="modal" style={{ display: showDetailsModal ? 'block' : 'none' }}>
           <div className="modal-dialog">
@@ -300,9 +349,23 @@ import './HrInterviewResponse.css';
                 <h5 className="modal-title text-center">Employee Details:</h5>
               </div>
               <div className="modal-body">
-                <p><strong>Full Name:</strong> {selectedEmployeeDetails.fullName}</p>
+                {/* <p><strong>Full Name:</strong> {selectedEmployeeDetails.fullName}</p>
                 <p><strong>Email: </strong>{selectedEmployeeDetails.email}</p>
-                <p><strong>Aadhar Number:</strong>  {selectedEmployeeDetails.aadhaarNumber}</p>
+                <p><strong>Aadhar Number:</strong>  {selectedEmployeeDetails.aadhaarNumber}</p> */}
+                <table>
+                    <tr>
+                      <th>Full Name</th>
+                      <td>{selectedEmployeeDetails.fullName}</td>
+                    </tr>
+                    <tr>
+                      <th>Email</th>
+                      <td>{selectedEmployeeDetails.email}</td>
+                    </tr>
+                    <tr>
+                      <th>Aadhar Number</th>
+                      <td>{selectedEmployeeDetails.aadhaarNumber}</td>
+                    </tr>
+                  </table>
                 <hr />
                 {selectedEmployeeDetails.statusHistories && selectedEmployeeDetails.statusHistories.map((history, index) => (
                   <div key={index}>

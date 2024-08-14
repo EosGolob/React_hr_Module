@@ -31,6 +31,27 @@ function ProfilePage() {
         }
     };
 
+    // const fetchProfileInfo = async () => {
+    //     try {
+    //         const token = localStorage.getItem('token');
+    //         if (!token) {
+    //             // If the token is not available, redirect the user to the login page
+    //             navigate('/');
+    //         } else {
+    //             const response = await UsersService.getYourProfile(token);
+    //             if (!response || response.ourUsers === null) {
+    //                 // If the response is not available or the user's profile info is not available, display an error message
+    //                 setProfileInfo({ message: 'Error fetching profile information. Please try again.' });
+    //             } else {
+    //                 setProfileInfo(response.ourUsers);
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error('Error fetching profile information:', error);
+    //         // If there's an error fetching the profile info, display an error message
+    //         setProfileInfo({ message: 'Error fetching profile information. Please try again.' });
+    //     }
+    // };
 
     const handleLogout = (e) => {
         e.preventDefault(); // Prevent the default anchor behavior
