@@ -6,7 +6,7 @@ import DataTable from 'react-data-table-component';
 import { AuthContext } from '../auth/AuthContext';
 import { useNavigate,Link } from 'react-router-dom'; 
 
-// const RejectedByHr = () => {
+
   function RejectedByHr ({name}) {
   // const {user} = useUser();
   const [employees, setEmployees] = useState([]);
@@ -19,6 +19,8 @@ import { useNavigate,Link } from 'react-router-dom';
   const [currentDateTime, setCurrentDateTime] = useState('');
   const [submissionStatus, setSubmissionStatus] = useState('idle'); 
   const [submissionError, setSubmissionError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     getAllEmployees();
     updateDateTime();
@@ -101,24 +103,47 @@ const handleDownload = () => {
   XLSX.writeFile(workbook, 'filtered_employees.xlsx');
 };
  
+// const handleHrResponseValue = (employeeId) => {
+   
+//     setSubmissionStatus('pending');
+//     updateEmployeeHrRejectedScreeningResponse(employeeId, null,name)
+//       .then(response => {
+//         setSubmissionStatus('success');
+//         console.log('Response from backend:', response.data);
+//         getAllEmployees();
+//       })
+//       .catch(error => {
+//         setSubmissionStatus('error')
+//         setSubmissionError(error.message)
+//         console.error('Error updating employee:', error);
+//       });
+//   };
+
 const handleHrResponseValue = (employeeId) => {
-    // if (!user || !user.name) {
-    //     console.error('User information not available');
-    //     return;
-    // }
-    setSubmissionStatus('pending');
-    updateEmployeeHrRejectedScreeningResponse(employeeId, null,name)
-      .then(response => {
-        setSubmissionStatus('success');
-        console.log('Response from backend:', response.data);
-        getAllEmployees();
-      })
-      .catch(error => {
-        setSubmissionStatus('error')
-        setSubmissionError(error.message)
-        console.error('Error updating employee:', error);
-      });
-  };
+  if (isSubmitting) {
+    console.error('Please wait for the current submission to complete');
+    return;
+  }
+
+  setIsSubmitting(true);
+  setSubmissionStatus('pending');
+  
+  updateEmployeeHrRejectedScreeningResponse(employeeId, null, name)
+    .then(response => {
+      setSubmissionStatus('success');
+      console.log('Response from backend:', response.data);
+      getAllEmployees();
+    })
+    .catch(error => {
+      setSubmissionStatus('error');
+      setSubmissionError(error.message);
+      console.error('Error updating employee:', error);
+    })
+    .finally(() => {
+      setIsSubmitting(false);
+    });
+};
+
 
   const handleLogout = (e) => {
     e.preventDefault(); // Prevent the default anchor behavior
@@ -148,11 +173,6 @@ const updateDateTime = () => {
   const columns = [
     {
       name: 'Name',
-      // cell: row => (
-      //   // <button className='btn btn-link' onClick={() => showEmployeeDetails(row.id)}>
-      //     {row.fullName}
-      //   </button>
-      // ),
       selector: row => row.fullName,
       sortable: true,
     },
@@ -186,16 +206,6 @@ const updateDateTime = () => {
       selector: row => row.gender,
       sortable: true,
     },
-    // {
-    //   name: 'Remark By Hr',
-    //   selector: row => row.reMarksByHr,
-    //   sortable: true,
-    // },
-    // {
-    //   name: 'Remark By Manager',
-    //   selector: row => row.reMarksByManager,
-    //   sortable: true,
-    // },
     {
       name: 'Remark Profile Screen',
       selector: row => row.profileScreenRemarks,
@@ -246,6 +256,11 @@ const updateDateTime = () => {
           <button className="btn btn-outline-info" onClick={handleDownload} disabled={filteredEmployees.length === 0}>Download Filtered Data</button>
         </div>
       </div>
+      {isSubmitting && (
+          <div className="loading-indicator">
+            Submitting response, please wait...
+          </div>
+        )}
       <DataTable
           columns={columns}
           data={filteredEmployees}
@@ -276,7 +291,6 @@ const updateDateTime = () => {
         />
     
       </div>
-      {/* </div> */}
     </>
   );
   

@@ -1,5 +1,6 @@
 import React, { useEffect, useState ,useContext} from 'react'
-import { listEmployees, selectInterviewProcess, getEmployeeDetails } from './services/EmployeeServiceJWT';
+import { listEmployees, selectInterviewProcess, getEmployeeDetails} from './services/EmployeeServiceJWT';
+import UsersService from './services/UsersService';
 import { format } from 'date-fns';
 import { useUser } from './auth/UserContext';
 import DataTable from 'react-data-table-component';
@@ -10,26 +11,23 @@ import '../components/css/layout.css';
 import '../components/css/fontawesome.css';
 import '../components/css/bootstrap.min.css';
 import './EmployeeProcessSelection.css';
-// const EmployeeProcessSelection = () => {
   function EmployeeProcessSelection ({name}) {
-  // const { user } = useUser();
   const [employees, setEmployees] = useState([]);
-  // const [selectedProcess, setSelectedProcess] = useState([]);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [alertMessage, setAlertMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState('');
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [filterDate, setFilterDate] = useState(null); // State for filter date
+  const [filterDate, setFilterDate] = useState(null); 
   const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-
   const [selectionError, setSelectionError] = useState(false);
   const [remarks, setRemarks] = useState({})
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [currentDateTime, setCurrentDateTime] = useState('') 
+  const [processNames, setProcessNames] = useState([]);
   useEffect(() => {
 
     if (!token) {
@@ -38,12 +36,26 @@ import './EmployeeProcessSelection.css';
       return;
     }
     getAllEmployees(token);
+    fetchProcessNames();
     updateDateTime();
-    const intervalId = setInterval(updateDateTime, 1000); // Update every second
+    const intervalId = setInterval(updateDateTime, 1000); 
     return () => clearInterval(intervalId);
   }, [token, filterDate, sortOrder, currentPage]);
 
 
+  const fetchProcessNames = () => {
+    if (!token) {
+        console.error('Token not found.');
+        return;
+    }
+    UsersService.getAllProcessNames(token)
+        .then(response => {
+            setProcessNames(response); 
+        })
+        .catch(error => {
+            console.error('Error fetching process names:', error);
+        });
+};
 
   const getAllEmployees = (token) => {
     listEmployees(token)
@@ -163,13 +175,6 @@ import './EmployeeProcessSelection.css';
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
-  // const handleRemarksChange = (e, employeeId) => {
-    // const value = e.target.value;
-    // setRemarks(prevRemarks => ({
-    //   ...prevRemarks,
-    //   [employeeId]: value
-    // }));
-  // };
 
   const handleRemarksChange = (e, employeeId) => {
     const value = e.target.value;
@@ -268,18 +273,18 @@ const updateDateTime = () => {
         <select
           className='form-select'
           style={{
-            padding: "10px 15px", // Adjust padding for overall size
-            fontSize: "14px",      
-            height: "40px",        // Increase height if needed
-            width: "100px" 
-           }}
+            padding: "10px 15px",
+            fontSize: "14px",
+            height: "40px",
+            width: "100px"
+          }}
           value={row.selectedProcess || ''}
           onChange={(e) => handleProcessChange(e, row.id)}
         >
           <option value="" disabled>Select</option>
-          <option value="HDFC">HDFC</option>
-          <option value="ICICI">ICICI</option>
-          <option value="MIS">MIS</option>
+          {processNames.map((process, index) => (
+            <option key={index} value={process}>{process}</option>
+          ))}
         </select>
       )
     },

@@ -9,7 +9,7 @@ const approvedendpoint   = 'approvedEmpdetails';
 const rejectedEmpdetails = 'rejectedEmpdetails';
 const empIntScheduleEndpoint = 'employees-schedule-interview';
 const hrRejectEmployeEndPoint = 'hrRejectedEmpDetails';
-
+const processNameEndpoint = 'admin/get-process-name';
 const axiosInstance = axios.create({
     baseURL: REST_API_BASE_URL,
   })
@@ -59,11 +59,15 @@ const axiosInstance = axios.create({
   export const getlistOfManagerMisResponeField = () => {
     return axiosInstance.get(`/${misendpoint}`, authConfig());
   };
-
-  export const getListOfManagerResponseFieldOnRole = (role) => {
-    return axiosInstance.get(`/getAllEmployeeOnManagersPage/${role}`, authConfig());
+  export const getListOfProcessNameFrom = () =>{
+    return axiosInstance.get(`/${processNameEndpoint}`, authConfig());
+  }
+  // export const getListOfManagerResponseFieldOnRole = (role) => {
+  //   return axiosInstance.get(`/getAllEmployeeOnManagersPage/${role}`, authConfig());
+  // };
+  export const getListOfManagerResponseFieldOnRole = (process) => {
+    return axiosInstance.get(`/getAllEmployeeOnManagersPage/${process}`, authConfig());
   };
-  
 
   export const getlistOfApprovedEmpList = () =>{
     return axiosInstance.get(`/${approvedendpoint}`, authConfig());

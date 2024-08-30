@@ -1,19 +1,21 @@
 import React, { useState, useEffect,useContext } from 'react'
 import { getlistOfRejectedEmpList, selectInterviewProcess, getEmployeeDetails } from '../services/EmployeeServiceJWT';
 import { getAttendenedInterview } from '../services/InterviewServiceJWT';
-// import { useUser } from '../auth/UserContext';
 import { format } from 'date-fns';
 import DataTable from 'react-data-table-component';
 import { AuthContext } from '../auth/AuthContext';
 import { useNavigate,Link } from 'react-router-dom'; 
 import './RejectedStatusPage.css'
+import UsersService from '../services/UsersService';
 
-// const RejectedStatusPage = () => {
+
+
   function RejectedStatusPage ({name}) {
   // const { user } = useUser();
   const [employees, setEmployees] = useState([]);
   // const [selectedResponse, setSelectedResponse] = useState({});
   const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState(''); 
   const [showAlert, setShowAlert] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState('');
@@ -26,11 +28,12 @@ import './RejectedStatusPage.css'
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate(); 
   const [currentDateTime, setCurrentDateTime] = useState('')
- 
+  const [processNames, setProcessNames] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
-    // getAllEmployees();
-    // getAttendenedProcesses();
     fetchData();
+    fetchProcessNames();
     updateDateTime();
     const intervalId = setInterval(updateDateTime, 1000); // Update every second
     return () => clearInterval(intervalId);
@@ -72,28 +75,75 @@ import './RejectedStatusPage.css'
     )
       .then(processes => {
         console.log('Attended Processes Data:', processes);
-        // setAttendedProcesses(processes);
       })
       .catch(error => {
         console.error('Error fetching attended processes:', error);
       });
   };
 
+
   const handleProcessChange = (e, employeeId) => {
     const selectedProcess = e.target.value;
-    setEmployees(preEmployees =>
-      preEmployees.map(employee =>
-        employee.id === employeeId ? { ...employee, selectedProcess } : employee
-      ));
+    setEmployees(prevEmployees =>
+      prevEmployees.map(employee => {
+        if (employee.id === employeeId) {
+          return { ...employee, selectedProcess: selectedProcess };
+        }
+        return employee;
+      }));
+    setSelectionError(false);
   };
 
+  // const handleAddInterviewProcess = (employeeId) => {
+  //   const employee = employees.find(emp => emp.id === employeeId);
+  //   if (!employee.selectedProcess) {
+  //     setSelectionError(true);
+  //     return; // Do not proceed with submission
+  //   }
+  //   const interviewDate = new Date().toISOString().slice(0, 10);
+  //   const interviewTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+  //   const interviewData = {
+  //     processName: employee.selectedProcess,
+  //     interviewDate: interviewDate,
+  //     interviewTime: interviewTime,
+  //     status: "ReScheduled",
+  //     // scheduledBy: user ? user.name : 'Unknown',
+  //     scheduledBy:name
+
+  //   };
+  //   selectInterviewProcess(employeeId, interviewData)
+  //     .then(response => {
+  //       // window.location.reload();
+  //       fetchData();
+  //       setAlertMessage("Interview Process assigned succussfully");
+  //       // setAlertType("success");
+  //       setShowAlert(true);
+  //       setTimeout(() => {
+  //         setShowAlert(false);
+  //       }, 3000);
+
+  //     }).catch(error => {
+  //       setAlertMessage("Error assigning interview process.try again");
+  //       setShowAlert(true);
+  //       setTimeout(() => {
+  //         setShowAlert(false);
+  //       }, 3000);
+  //     });
+
+
+  // };
   const handleAddInterviewProcess = (employeeId) => {
+    if (isSubmitting) return; // Prevent further submissions while one is in progress
+
     const employee = employees.find(emp => emp.id === employeeId);
     if (!employee.selectedProcess) {
       setSelectionError(true);
-      return; // Do not proceed with submission
+      return;
     }
+
+    setIsSubmitting(true); // Set submitting state to true
+
     const interviewDate = new Date().toISOString().slice(0, 10);
     const interviewTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -102,31 +152,34 @@ import './RejectedStatusPage.css'
       interviewDate: interviewDate,
       interviewTime: interviewTime,
       status: "ReScheduled",
-      // scheduledBy: user ? user.name : 'Unknown',
-      scheduledBy:name
-
+      scheduledBy: name
     };
+
     selectInterviewProcess(employeeId, interviewData)
       .then(response => {
-        // window.location.reload();
         fetchData();
-        setAlertMessage("Interview Process assigned succussfully");
-        // setAlertType("success");
+        setAlertMessage("Interview Process assigned successfully");
+        setAlertType("success");
         setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
-
-      }).catch(error => {
-        setAlertMessage("Error assigning interview process.try again");
+        setTimeout(() => {setShowAlert(false);
+        setAlertType('');
+        setAlertMessage('');
+      }, 3000);
+      })
+      .catch(error => {
+        setAlertMessage("Error assigning interview process. Try again");
+        setAlertType("error");
         setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
+        setTimeout(() => {setShowAlert(false);
+        setAlertType('');
+        setAlertMessage('');
+      }, 3000);
+      })
+      .finally(() => {
+        setIsSubmitting(false); // Reset submitting state
       });
-
-
   };
+
 
   const showEmployeeDetails = (employeeId) => {
     getEmployeeDetails(employeeId)
@@ -173,7 +226,19 @@ import './RejectedStatusPage.css'
         navigate('/');
     }
 };
-
+const fetchProcessNames = () => {
+  if (!token) {
+      console.error('Token not found.');
+      return;
+  }
+  UsersService.getAllProcessNames(token)
+      .then(response => {
+          setProcessNames(response); // response.data if the data is wrapped in a `data` property
+      })
+      .catch(error => {
+          console.error('Error fetching process names:', error);
+      });
+};
 const updateDateTime = () => {
   const now = new Date();
   const options = {
@@ -222,47 +287,48 @@ const updateDateTime = () => {
       name: 'Register Date',
       selector: row => new Date(row.creationDate).toLocaleDateString(),
     },
-    // {
-    //   name: 'Remark By Hr',
-    //   selector: row => row.reMarksByHr,
-    // },
-    // {
-    //   name: 'Remark By Manager',
-    //   selector: row => row.reMarksByManager,
-    // },
-    // {
-    //   name: 'Remark Profile Screen',
-    //   selector: row => row.profileScreenRemarks,
-    // },
+  
     {
       name: 'Re-Schedule',
       selector: row => (
         <select
           className='form-select'
           style={{
-            padding: "10px 15px", // Adjust padding for overall size
-            fontSize: "14px",      
-            height: "40px",        // Increase height if needed
-            width: "100px" 
-           }}
+            padding: "10px 15px",
+            fontSize: "14px",
+            height: "40px",
+            width: "100px"
+          }}
           value={row.selectedProcess || ''}
           onChange={(e) => handleProcessChange(e, row.id)}
         >
           <option value="" disabled>Select</option>
-          <option value="HDFC">HDFC</option>
-          <option value="ICICI">ICICI</option>
-          <option value="MIS">MIS</option>
+          {processNames.map((process, index) => (
+            <option key={index} value={process}>{process}</option>
+          ))}
         </select>
       )
     },
+    // {
+    //   name: 'Submit Response',
+    //   cell: row => (
+    //     <button
+    //       className="btn btn-outline-info"
+    //       onClick={() => handleAddInterviewProcess(row.id)}
+    //     >
+    //       Schedule
+    //     </button>
+    //   )
+    // }
     {
       name: 'Submit Response',
       cell: row => (
         <button
           className="btn btn-outline-info"
           onClick={() => handleAddInterviewProcess(row.id)}
+          disabled={isSubmitting} // Disable button when submitting
         >
-          Schedule
+          {isSubmitting ? 'Submitting...' : 'Schedule'}
         </button>
       )
     }
@@ -427,74 +493,3 @@ const updateDateTime = () => {
 
 export default RejectedStatusPage
 
-
-  // Calculate current employees to display based on pagination
-  // const indexOfLastEmployee = currentPage * itemsPerPage;
-  // const indexOfFirstEmployee = indexOfLastEmployee - itemsPerPage;
-  // const currentEmployees = employees.slice(indexOfFirstEmployee, indexOfLastEmployee);
-
-  // Change page
-  // const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-{/* <table className='table table-striped table-bordered'style={{ border: '1px solid black', padding: '8px' }}>
-        <thead>
-          <tr>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Name</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Email</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Job Profile</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Mobile No</th>         
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Gender</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Register Date</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Remark By Hr</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Remark By Manager</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Remark Profile Screen</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Re Interview</th>
-            <th style={{fontFamily:'sans-serif',backgroundColor:'lightblue',textAlign:'center' }}>Submit Response</th> 
-          </tr>
-        </thead>
-        <tbody>
-          { currentEmployees.map((employee) => (
-              <tr key={employee.id}>            
-                 <td>
-                <button
-                  className="btn btn-link"
-                  onClick={() => showEmployeeDetails(employee.id)}
-                >
-                  {employee.fullName}
-                </button>
-                </td>
-                <td>{employee.email}</td>
-                <td>{employee.jobProfile}</td>
-                <td>{employee.mobileNo}</td>
-                <td>{employee.gender}</td>
-                <td>{new Date(employee.creationDate).toLocaleDateString()}</td>
-                <td>{employee.reMarksByHr}</td>
-                <td>{employee.reMarksByManager}</td>
-                <td>{employee.profileScreenRemarks}</td>
-                <td  style={{ textAlign: 'center' }}>
-                  <select className='form-select' value={employee.selectedProcess||''} onChange={e=> handleProcessChange(e,employee.id)}>
-                  <option value="" disabled>Select response</option>
-                  <option value = "HDFC">HDFC</option>
-                  <option value = "ICICI">ICICI</option>
-                  <option value = "MIS">MIS</option>
-                  </select>
-                </td>  
-               
-                 <td  style={{ textAlign: 'center', }}>
-                  <button  className="btn btn-outline-info" onClick={() => handleAddInterviewProcess(employee.id)}>Submit</button>
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table> */}
-{/* <nav>
-        <ul className="pagination">
-          <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-            <button className="page-link" onClick={() => paginate(currentPage - 1)}>Previous</button>
-          </li>
-          <li className="page-item"><span className="page-link">{currentPage}</span></li>
-          <li className={`page-item ${currentEmployees.length < itemsPerPage ? 'disabled' : ''}`}>
-            <button className="page-link" onClick={() => paginate(currentPage + 1)}>Next</button>
-          </li>
-        </ul>
-      </nav> */}

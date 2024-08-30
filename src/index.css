@@ -109,44 +109,7 @@
   } */
   
 
-  
-  /* REGISTRATION STYLLING */
-  /* update user */
-  
-  /* .auth-container {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-  }
-  
-  .auth-container h2 {
-  font-size: 24px;
-  color: #333;
-  }
-
-  
-  .form-group label {
-  display: block;
-
-  font-size: 16px;
-  }
-  
-  .form-group input[type="text"],
-  .form-group input[type="email"],
-  .form-group input[type="password"] {
-  width: 100%;
-  } */
  
-  /* border: 1px solid #ccc;
-  border-radius: 3px;
-  font-size: 16px;
-  } */
-  
-  /* button[type="submit"] {
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  } */
 
   
 
@@ -302,3 +265,41 @@
   color: rgb(189, 47, 11);
 }
 
+ 
+  /* REGISTRATION STYLLING */
+  /* update user */
+  
+  /* .auth-container {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  }
+  
+  .auth-container h2 {
+  font-size: 24px;
+  color: #333;
+  }
+
+  
+  .form-group label {
+  display: block;
+
+  font-size: 16px;
+  } */
+  
+  /* .form-group input[type="text"],
+  .form-group input[type="email"],
+  .form-group input[type="password"] {
+  width: 100%;
+  } */
+ 
+  /* border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 16px;
+  } */
+  
+  /* button[type="submit"] {
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  } */

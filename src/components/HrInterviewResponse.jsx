@@ -7,9 +7,7 @@ import { AuthContext } from '../components/auth/AuthContext';
 import { useNavigate,Link } from 'react-router-dom';  
 import './HrInterviewResponse.css';
 
-// const HrInterviewResponse = () => {
   function HrInterviewResponse  ({role ,name}) {
-  // const { user } = useUser();
   const [employees, setEmployees] = useState([]);
   const [selectedResponse, setSelectedResponse] = useState({});
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -275,7 +273,7 @@ import './HrInterviewResponse.css';
   
   ];
  const handleLogout = (e) => {
-        e.preventDefault(); // Prevent the default anchor behavior
+        e.preventDefault(); 
         const confirmLogout = window.confirm('Are you sure you want to logout?');
         if (confirmLogout) {
             logout();
