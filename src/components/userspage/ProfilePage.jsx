@@ -6,12 +6,14 @@ import '../css/bootstrap.min.css';
 import '../css/layout.css';
 import '../css/style.css';
 import '../css/login.css';
+import NotificationIcon from '../NotificationIcon';
 
 function ProfilePage() {
     const [profileInfo, setProfileInfo] = useState({});
     const { logout } = useContext(AuthContext);
     const navigate = useNavigate();
     const [currentDateTime, setCurrentDateTime] = useState('');
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         fetchProfileInfo();
@@ -26,6 +28,11 @@ function ProfilePage() {
             const token = localStorage.getItem('token'); // Retrieve the token from localStorage
             const response = await UsersService.getYourProfile(token);
             setProfileInfo(response.ourUsers);
+            if (response.ourUsers.role === 'ADMIN') {
+                setIsAdmin(true);
+            } else {
+                setIsAdmin(false);
+            }
         } catch (error) {
             console.error('Error fetching profile information:', error);
         }
@@ -61,6 +68,7 @@ function ProfilePage() {
         <>
             <div className="header">
             <span className="pe-3">{currentDateTime}</span>
+            {isAdmin && <NotificationIcon />}
                 <a class="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></a>
             </div>
             <div class="dashboard-wrap">

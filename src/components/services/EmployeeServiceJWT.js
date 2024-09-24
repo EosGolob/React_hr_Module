@@ -10,6 +10,7 @@ const rejectedEmpdetails = 'rejectedEmpdetails';
 const empIntScheduleEndpoint = 'employees-schedule-interview';
 const hrRejectEmployeEndPoint = 'hrRejectedEmpDetails';
 const processNameEndpoint = 'admin/get-process-name';
+const searchByNameAPI ='searchByNameAPI';
 const axiosInstance = axios.create({
     baseURL: REST_API_BASE_URL,
   })
@@ -83,13 +84,17 @@ const axiosInstance = axios.create({
     return axiosInstance.get(`/${empDetailsInfoEndpoint}/${employeeId}`, authConfig());
   };
   
+  export const getAllSearchNameApi = () => {
+   return  axiosInstance.get(`${REST_API_BASE_URL}/${searchByNameAPI}`,authConfig()); 
+  }
+
   export const MrResponseSubmit = (employeeId, selectedResponse,mrUserName,managerRemarks) => {
     const url = `${REST_API_BASE_URL}/${employeeId}/mRResponse`;
     const data = { newStatus: selectedResponse,
                    mrUserName: mrUserName ,
                    managerRemarks:managerRemarks               
     };
-    return axios.put(url, data, authConfig()); // Include authConfig() here to pass headers
+    return axios.put(url, data, authConfig()); 
   };
 
   export const hrResponseSubmit = (employeeId, selectedResponse,hrUserName,profileScreenRemark) => {

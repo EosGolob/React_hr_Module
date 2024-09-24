@@ -9,10 +9,10 @@ function ManagerPageOnRoleType({ role, name, process }) {
   const [employees, setEmployees] = useState([]);
   const [selectedResponse, setSelectedResponse] = useState({});
   const [managerRemarks, setManagerRemarks] = useState({});
-  const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState(null);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  // const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState(null);
+  // const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [filterDate, setFilterDate] = useState(null);
-  const [sortOrder, setSortOrder] = useState('asc');
+  // const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage] = useState(10);
   const [responseError, setResponseError] = useState('');
@@ -31,7 +31,9 @@ function ManagerPageOnRoleType({ role, name, process }) {
       const intervalId = setInterval(updateDateTime, 1000);
       return () => clearInterval(intervalId);
     }
-  }, [filterDate, sortOrder, currentPage, process]);
+  // }, [filterDate, sortOrder, currentPage, process]);
+}, [filterDate, currentPage, process]);
+
 
   const getAllEmployees = async () => {
     try {
@@ -44,11 +46,11 @@ function ManagerPageOnRoleType({ role, name, process }) {
         );
       }
 
-      filteredEmployees.sort((a, b) => {
-        const dateA = new Date(a.creationDate);
-        const dateB = new Date(b.creationDate);
-        return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-      });
+      // filteredEmployees.sort((a, b) => {
+      //   const dateA = new Date(a.creationDate);
+      //   const dateB = new Date(b.creationDate);
+      //   return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      // });
 
       setEmployees(filteredEmployees);
     } catch (error) {
@@ -74,39 +76,7 @@ function ManagerPageOnRoleType({ role, name, process }) {
     }));
   };
 
-  // const handleHrResponseValue = (employeeId) => {
-  //   const selectedValue = selectedResponse[employeeId];
-  //   const managerRemark = managerRemarks[employeeId];
-  //   if (!selectedValue || !managerRemark) {
-  //     setResponseError('Please select a response and enter remarks');
-  //     setSuccessMessage(''); // Clear success message
-  //     return;
-  //   }
-
-  //   const confirmSubmit = window.confirm('Are you sure you want to submit this response?');
-  //   if (confirmSubmit) {
-
-  //     console.log("first 2", name);
-  //     MrResponseSubmit(employeeId, selectedValue, name, managerRemark)
-  //       .then((response) => {
-  //         setEmployees(prevEmployees =>
-  //           prevEmployees.map(emp =>
-  //             emp.id === employeeId ? { ...emp, ...response.data } : emp
-  //           )
-  //         );
-  //         getAllEmployees();
-  //         setShowDetailsModal(false);
-  //         setResponseError('');
-  //         setSuccessMessage('Response submitted successfully!');
-  //       })
-  //       .catch((error) => {
-  //         console.error('Error submitting HR response:', error);
-  //       });
-  //   } else {
-
-  //     console.log('Submission cancelled by user.');
-  //   }
-  // };
+ 
   const handleHrResponseValue = async (employeeId) => {
     if (processingEmployeeId) {
       // Prevent submission if another response is being processed
@@ -133,14 +103,14 @@ function ManagerPageOnRoleType({ role, name, process }) {
           )
         );
         getAllEmployees();
-        setShowDetailsModal(false);
+        // setShowDetailsModal(false);
         setResponseError('');
         setSuccessMessage('Response submitted successfully!');
       } catch (error) {
         console.error('Error submitting HR response:', error);
         setResponseError('Error submitting response. Please try again.');
       } finally {
-        setProcessingEmployeeId(null); // Reset the processing employee ID
+        setProcessingEmployeeId(null);
       }
     } else {
       console.log('Submission cancelled by user.');
@@ -157,9 +127,9 @@ function ManagerPageOnRoleType({ role, name, process }) {
     setFilterDate(null);
   };
 
-  const toggleSortOrder = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  };
+  // const toggleSortOrder = () => {
+  //   setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  // };
 
   const indexOfLastEmployee = currentPage * perPage;
   const indexOfFirstEmployee = indexOfLastEmployee - perPage;
@@ -190,10 +160,10 @@ function ManagerPageOnRoleType({ role, name, process }) {
       setEmployees([]);
       setSelectedResponse({});
       setManagerRemarks({});
-      setSelectedEmployeeDetails(null);
-      setShowDetailsModal(false);
+      // setSelectedEmployeeDetails(null);
+      // setShowDetailsModal(false);
       setFilterDate(null);
-      setSortOrder('asc');
+      // setSortOrder('asc');
       setCurrentPage(1);
       setResponseError('');
       logout();
@@ -222,11 +192,11 @@ function ManagerPageOnRoleType({ role, name, process }) {
           <div className="col-auto">
             <button className="btn btn-outline-info" onClick={clearFilter}>Clear Filter</button>
           </div>
-          <div className="col-auto">
+          {/* <div className="col-auto">
             <button className="btn btn-outline-info" onClick={toggleSortOrder}>
               {sortOrder === 'asc' ? 'Sort Desc' : 'Sort Asc'}
             </button>
-          </div>
+          </div> */}
         </div>
 
         <table className='table table-striped table-bordered' style={{ border: '1px solid black', padding: '10px' }}>

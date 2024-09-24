@@ -16,9 +16,10 @@ import { AuthContext } from './components/auth/AuthContext';
 import RejectedByHr from './components/hrrejected/RejectedByHr';
 import ManagerPageOnRoleType from './components/commonManagerPageOnRoleType/ManagerPageOnRoleType';
 import RegistrationPage from './components/auth/RegistrationPage';
+import SearchByName from './components/SearchByName';
 function App() {
 
-  const { isAuthenticated, role,name,process } = useContext(AuthContext);
+  const { isAuthenticated, role,name,process} = useContext(AuthContext);
   console.log("value on app page:", isAuthenticated, role, name,process);
   const displayPanelClass = isAuthenticated ? 'display-panel' : '';
 
@@ -34,7 +35,7 @@ function App() {
                 <Route path="/profile" element={<ProfilePage />} />
                 {role === 'ADMIN' && (
                   <>
-                    <Route path='/profile-screening' element={<HrInterviewResponse role={role} name={name} />} />
+                    <Route path='/profile-screening' element={<HrInterviewResponse role={role} name={name}/>} />
                     <Route path='/process-Selection' element={<EmployeeProcessSelection name = {name}/>} />
                     <Route path="/admin/user-management" element={<UserManagementPage />} />
                     <Route path="/approved" element={<ApprovedStatusPage />} />
@@ -44,7 +45,7 @@ function App() {
                     <Route path='/addemp' element={<EmployeeCreateComponent />} />
                     <Route path='/hrRejectedEmpInfo' element={<RejectedByHr name ={name} />} />
                     <Route path = '/register' element = {<RegistrationPage/>}/>
-                    
+                    <Route path = '/search' element = {<SearchByName/>}/>
                   </>
                 )}
                 {

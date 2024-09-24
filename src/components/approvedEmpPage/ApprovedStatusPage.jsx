@@ -6,6 +6,8 @@ import DataTable from 'react-data-table-component';
 import { AuthContext } from '../auth/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import './Approve.css';
+import NotificationIcon from '../NotificationIcon'
+
 const ApprovedStatusPage = () => {
 
   const [employees, setEmployees] = useState([]);
@@ -214,6 +216,7 @@ const ApprovedStatusPage = () => {
     <>
       <div className="header">
         <span className="pe-3">{currentDateTime}</span>
+        <NotificationIcon />
         <Link className="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></Link>
       </div>
       <div className='container' >

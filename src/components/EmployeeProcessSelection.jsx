@@ -1,33 +1,38 @@
-import React, { useEffect, useState ,useContext} from 'react'
-import { listEmployees, selectInterviewProcess, getEmployeeDetails} from './services/EmployeeServiceJWT';
+import React, { useEffect, useState, useContext } from 'react'
+import { listEmployees, selectInterviewProcess, getEmployeeDetails } from './services/EmployeeServiceJWT';
 import UsersService from './services/UsersService';
 import { format } from 'date-fns';
 import { useUser } from './auth/UserContext';
 import DataTable from 'react-data-table-component';
 import { AuthContext } from '../components/auth/AuthContext';
-import { useNavigate ,Link } from 'react-router-dom'; 
+import { useNavigate, Link } from 'react-router-dom';
 import '../components/css/style.css';
 import '../components/css/layout.css';
 import '../components/css/fontawesome.css';
 import '../components/css/bootstrap.min.css';
 import './EmployeeProcessSelection.css';
-  function EmployeeProcessSelection ({name}) {
+import NotificationIcon from '../components/NotificationIcon'
+
+function EmployeeProcessSelection({ name }) {
   const [employees, setEmployees] = useState([]);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [alertMessage, setAlertMessage] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState('');
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [filterDate, setFilterDate] = useState(null); 
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [filterDate, setFilterDate] = useState(null);
+  // const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [selectionError, setSelectionError] = useState(false);
   const [remarks, setRemarks] = useState({})
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [currentDateTime, setCurrentDateTime] = useState('') 
+  const [currentDateTime, setCurrentDateTime] = useState('')
   const [processNames, setProcessNames] = useState([]);
+
+  const [alert, setAlert] = useState({ message: '', type: '' });
+
   useEffect(() => {
 
     if (!token) {
@@ -38,24 +43,25 @@ import './EmployeeProcessSelection.css';
     getAllEmployees(token);
     fetchProcessNames();
     updateDateTime();
-    const intervalId = setInterval(updateDateTime, 1000); 
+    const intervalId = setInterval(updateDateTime, 1000);
     return () => clearInterval(intervalId);
-  }, [token, filterDate, sortOrder, currentPage]);
+    // }, [token, filterDate, sortOrder, currentPage]);
+  }, [token, filterDate, currentPage]);
 
 
   const fetchProcessNames = () => {
     if (!token) {
-        console.error('Token not found.');
-        return;
+      console.error('Token not found.');
+      return;
     }
     UsersService.getAllProcessNames(token)
-        .then(response => {
-            setProcessNames(response); 
-        })
-        .catch(error => {
-            console.error('Error fetching process names:', error);
-        });
-};
+      .then(response => {
+        setProcessNames(response);
+      })
+      .catch(error => {
+        console.error('Error fetching process names:', error);
+      });
+  };
 
   const getAllEmployees = (token) => {
     listEmployees(token)
@@ -67,13 +73,13 @@ import './EmployeeProcessSelection.css';
           filteredEmployees = filteredEmployees.filter(emp => new Date(emp.creationDate).toISOString().slice(0, 10) === filterDate.toISOString().slice(0, 10));
         }
         // Sort employees by creationDate based on sortOrder
-        filteredEmployees.sort((a, b) => {
-          if (sortOrder === 'asc') {
-            return new Date(a.creationDate) - new Date(b.creationDate);
-          } else {
-            return new Date(b.creationDate) - new Date(a.creationDate);
-          }
-        });
+        // filteredEmployees.sort((a, b) => {
+        //   if (sortOrder === 'asc') {
+        //     return new Date(a.creationDate) - new Date(b.creationDate);
+        //   } else {
+        //     return new Date(b.creationDate) - new Date(a.creationDate);
+        //   }
+        // });
         setEmployees(filteredEmployees);
       })
       .catch(error => {
@@ -96,10 +102,10 @@ import './EmployeeProcessSelection.css';
 
   const handleAddInterviewProcess = (employeeId) => {
     const employee = employees.find(emp => emp.id === employeeId);
-    if (!employee.selectedProcess || !remarks[employeeId]) {
-      setSelectionError(true);
-      return; // Do not proceed with submission
-    }
+    // if (!employee.selectedProcess || !remarks[employeeId]) {
+    //   setSelectionError(true);
+    //   return; 
+    // }
     const interviewDate = new Date().toISOString().slice(0, 10);
     const interviewTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -109,27 +115,36 @@ import './EmployeeProcessSelection.css';
       interviewTime: interviewTime,
       status: "Scheduled",
       // scheduledBy: user ? user.name : 'Unknown',
-      scheduledBy:name,
+      scheduledBy: name,
       remarks: remarks[employeeId] || ''
     };
     selectInterviewProcess(employeeId, interviewData)
       .then(response => {
         console.log("Interview Process added successfully:", response.data);
-        setAlertMessage("Interview process assigned successfully.");
-        setShowAlert(true);
+        // setAlertMessage("Interview process assigned successfully.");
+        setAlert({ message: "Interview process assigned successfully.", type: 'success' });
+        // setShowAlert(true);
         setTimeout(() => {
-          setShowAlert(false);
+          // setShowAlert(false);
+          getAllEmployees(token);
         }, 1000);
 
         getAllEmployees(token);
       })
+      //     .catch(error => {
+      //       console.error("Error adding interview process:", error);
+      //       setAlertMessage("Error assigning interview process. Please try again.");
+      //       setShowAlert(true);
+      //       setTimeout(() => {
+      //         setShowAlert(false);
+      //       },1000);
+      //     });
+      // };
       .catch(error => {
+        const errorMessage = error.response && error.response.data ? error.response.data : "Error assigning interview process. Please try again.";
         console.error("Error adding interview process:", error);
-        setAlertMessage("Error assigning interview process. Please try again.");
-        setShowAlert(true);
-        setTimeout(() => {
-          setShowAlert(false);
-        },1000);
+        setAlert({ message: errorMessage, type: 'error' });
+        setTimeout(() => setAlert({ message: '', type: '' }), 3000); // Clear after 3 seconds
       });
   };
 
@@ -171,9 +186,9 @@ import './EmployeeProcessSelection.css';
     setFilterDate(null);
   };
 
-  const toggleSortOrder = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  };
+  // const toggleSortOrder = () => {
+  //   setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  // };
 
 
   const handleRemarksChange = (e, employeeId) => {
@@ -199,17 +214,19 @@ import './EmployeeProcessSelection.css';
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+
   const handleLogout = (e) => {
     e.preventDefault(); // Prevent the default anchor behavior
     const confirmLogout = window.confirm('Are you sure you want to logout?');
     if (confirmLogout) {
-        logout();
-        navigate('/');
+      logout();
+      navigate('/');
     }
-};
-const updateDateTime = () => {
-  const now = new Date();
-  const options = {
+  };
+  const updateDateTime = () => {
+    const now = new Date();
+    const options = {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -218,10 +235,10 @@ const updateDateTime = () => {
       minute: '2-digit',
       second: '2-digit',
       hour12: false,
+    };
+    const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
+    setCurrentDateTime(formattedDateTime);
   };
-  const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
-  setCurrentDateTime(formattedDateTime);
-};
   const columns = [
     {
       name: 'Name',
@@ -234,7 +251,7 @@ const updateDateTime = () => {
           {row.fullName}
         </button>
       )
-    
+
     },
     {
       name: 'Email',
@@ -303,20 +320,27 @@ const updateDateTime = () => {
   return (
 
 
-      <>
+    <>
       <div className="header">
         <span className="pe-3">{currentDateTime}</span>
-        <Link className="logout-btn"onClick={handleLogout} ><i class="fas fa-power-off"></i></Link>
+        <NotificationIcon />
+        <Link className="logout-btn" onClick={handleLogout} ><i class="fas fa-power-off"></i></Link>
       </div>
       <div className="dashboard-wrap">
-        <div>
+        {/* <div>
           {selectionError && <p className="alert alert-danger">Please fill all required fields</p>}
         </div>
         {showAlert && (
           <div className="alert alert-success" role="alert">{alertMessage}
 
           </div>
+        )} */}
+        {alert.message && (
+          <div className={`alert ${alert.type === 'success' ? 'alert-success' : 'alert-danger'}`} role="alert">
+            {alert.message}
+          </div>
         )}
+
         <br></br>
         <br></br>
         <div className="row mb-3">
@@ -329,11 +353,11 @@ const updateDateTime = () => {
           <div className="col-auto">
             <button className="btn btn-outline-info" onClick={clearFilter}>Clear Filter</button>
           </div>
-          <div className="col-auto">
+          {/* <div className="col-auto">
             <button className="btn btn-outline-info" onClick={toggleSortOrder}>
               {sortOrder === 'asc' ? 'Sort Desc' : 'Sort Asc'}
             </button>
-          </div>
+          </div> */}
         </div>
         <DataTable
           columns={columns}
@@ -342,7 +366,7 @@ const updateDateTime = () => {
           paginationServer
           paginationTotalRows={employees.length}
           onChangePage={page => setCurrentPage(page)}
-          onChangeRowsPerPage={rowsPerPage => setCurrentPage(1)} 
+          onChangeRowsPerPage={rowsPerPage => setCurrentPage(1)}
           customStyles={{
             headRow: {
               style: {
@@ -359,8 +383,8 @@ const updateDateTime = () => {
             headCells: {
               style: {
                 color: 'white', // Change text color of header cells
-                fontSize: '12px' ,// Example: Adjust font size of header cells
-              
+                fontSize: '12px',// Example: Adjust font size of header cells
+
               }
             }
           }}
@@ -390,7 +414,7 @@ const updateDateTime = () => {
                       <th>Aadhar Number</th>
                       <td>{selectedEmployeeDetails.aadhaarNumber}</td>
                     </tr>
-                    </table>
+                  </table>
                   <hr />
                   {/* {selectedEmployeeDetails.statusHistories && selectedEmployeeDetails.statusHistories.map((history, index) => (
                     <div key={index}>
@@ -420,7 +444,7 @@ const updateDateTime = () => {
                       </tbody>
                     </table>
                   )} */}
-                   <table>
+                  <table>
                     <thead>
                       <tr>
                         <th>status</th>
@@ -451,7 +475,7 @@ const updateDateTime = () => {
           </div>
         )}
       </div>
-      </>
+    </>
 
   );
 };

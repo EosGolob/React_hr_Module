@@ -8,14 +8,12 @@ export const AuthProvider = ({ children }) => {
     const [role, setRole] = useState(UsersService.getRole());
     const [name, setName] = useState(UsersService.getName());
     const [process, setProcess] = useState(UsersService.getProcess() || '');
-
     useEffect(() => {
         const handleStorageChange = () => {
             setIsAuthenticated(UsersService.isAuthenticated());
             setRole(UsersService.getRole());
             setName(UsersService.getName());
             setProcess(UsersService.getProcess() || '');
-
         };
 
         window.addEventListener('storage', handleStorageChange);
@@ -28,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', token);
         localStorage.setItem('role', role);
         localStorage.setItem('name', name);
-        localStorage.setItem('process', process);
+        localStorage.setItem('process', process);        
 
         setIsAuthenticated(true);
         setRole(role);
@@ -47,7 +45,6 @@ export const AuthProvider = ({ children }) => {
         setRole(null);
         setName(null);
         setProcess(null);
-
     };
 
     return (

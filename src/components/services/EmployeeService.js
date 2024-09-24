@@ -5,6 +5,7 @@ const INTERVIEW_API_BASE_URL = 'http://localhost:8080/api/interviews';
 const endpoint = 'employees-schedule-interview';
 const maendpoint = 'managerResponeField';
 const x = 'getAllEmp';
+export const getAllSearchNameApi = () => axios.get(REST_API_BASE_URL + '/' + searchByNameAPI)
 export const listEmployees = () => axios.get(REST_API_BASE_URL+'/'+x);
 export const creatEmployee = (employee) => axios.post(REST_API_BASE_URL,employee);
 export const getEmployee =(employeeId) => axios.get(REST_API_BASE_URL +'/'+ employeeId);

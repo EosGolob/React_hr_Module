@@ -7,7 +7,7 @@ import { AuthContext } from '../auth/AuthContext';
 import { useNavigate,Link } from 'react-router-dom'; 
 import './RejectedStatusPage.css'
 import UsersService from '../services/UsersService';
-
+import NotificationIcon from '../NotificationIcon'
 
 
   function RejectedStatusPage ({name}) {
@@ -21,7 +21,7 @@ import UsersService from '../services/UsersService';
   const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState('');
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [filterDate, setFilterDate] = useState(null); // State for filter date
-  const [sortOrder, setSortOrder] = useState('asc');
+  // const [sortOrder, setSortOrder] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [selectionError, setSelectionError] = useState(false);
@@ -37,7 +37,7 @@ import UsersService from '../services/UsersService';
     updateDateTime();
     const intervalId = setInterval(updateDateTime, 1000); // Update every second
     return () => clearInterval(intervalId);
-  }, [token, filterDate, sortOrder, currentPage]);
+  }, [token, filterDate,currentPage]);
 
 
   const fetchData = () => {
@@ -54,13 +54,13 @@ import UsersService from '../services/UsersService';
           filteredEmployees = filteredEmployees.filter(emp => new Date(emp.creationDate).toISOString().slice(0, 10) === filterDate.toISOString().slice(0, 10));
         }
 
-        filteredEmployees.sort((a, b) => {
-          if (sortOrder === 'asc') {
-            return new Date(a.creationDate) - new Date(b.creationDate);
-          } else {
-            return new Date(b.creationDate) - new Date(a.creationDate);
-          }
-        });
+        // filteredEmployees.sort((a, b) => {
+        //   if (sortOrder === 'asc') {
+        //     return new Date(a.creationDate) - new Date(b.creationDate);
+        //   } else {
+        //     return new Date(b.creationDate) - new Date(a.creationDate);
+        //   }
+        // });
         console.log('Response Data:', response.data);
         setEmployees(filteredEmployees);
       }).catch(error => {
@@ -94,45 +94,7 @@ import UsersService from '../services/UsersService';
     setSelectionError(false);
   };
 
-  // const handleAddInterviewProcess = (employeeId) => {
-  //   const employee = employees.find(emp => emp.id === employeeId);
-  //   if (!employee.selectedProcess) {
-  //     setSelectionError(true);
-  //     return; // Do not proceed with submission
-  //   }
-  //   const interviewDate = new Date().toISOString().slice(0, 10);
-  //   const interviewTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  //   const interviewData = {
-  //     processName: employee.selectedProcess,
-  //     interviewDate: interviewDate,
-  //     interviewTime: interviewTime,
-  //     status: "ReScheduled",
-  //     // scheduledBy: user ? user.name : 'Unknown',
-  //     scheduledBy:name
-
-  //   };
-  //   selectInterviewProcess(employeeId, interviewData)
-  //     .then(response => {
-  //       // window.location.reload();
-  //       fetchData();
-  //       setAlertMessage("Interview Process assigned succussfully");
-  //       // setAlertType("success");
-  //       setShowAlert(true);
-  //       setTimeout(() => {
-  //         setShowAlert(false);
-  //       }, 3000);
-
-  //     }).catch(error => {
-  //       setAlertMessage("Error assigning interview process.try again");
-  //       setShowAlert(true);
-  //       setTimeout(() => {
-  //         setShowAlert(false);
-  //       }, 3000);
-  //     });
-
-
-  // };
   const handleAddInterviewProcess = (employeeId) => {
     if (isSubmitting) return; // Prevent further submissions while one is in progress
 
@@ -214,9 +176,9 @@ import UsersService from '../services/UsersService';
     setFilterDate(null);
   };
 
-  const toggleSortOrder = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  };
+  // const toggleSortOrder = () => {
+  //   setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  // };
 
   const handleLogout = (e) => {
     e.preventDefault(); // Prevent the default anchor behavior
@@ -338,6 +300,7 @@ const updateDateTime = () => {
     <>
       <div class="header">
         <span class="pe-3">{currentDateTime}</span>
+        <NotificationIcon />
         <Link class="logout-btn" href="#" onClick={handleLogout}><i class="fas fa-power-off"></i></Link>
       </div>
       <div className='container' >
@@ -361,11 +324,11 @@ const updateDateTime = () => {
           <div className="col-auto">
             <button className="btn btn-outline-info" onClick={clearFilter}>Clear Filter</button>
           </div>
-          <div className="col-auto">
+          {/* <div className="col-auto">
             <button className="btn btn-outline-info" onClick={toggleSortOrder}>
               {sortOrder === 'asc' ? 'Sort Desc' : 'Sort Asc'}
             </button>
-          </div>
+          </div> */}
         </div>
 
 

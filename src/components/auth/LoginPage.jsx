@@ -12,39 +12,6 @@ function LoginPage() {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
-  
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     const userData = await UsersService.login(email, password);
-
-  //     if (userData.token) {
-  //       localStorage.setItem('token', userData.token);
-  //       localStorage.setItem('role', userData.role);
-  //       localStorage.setItem('name', userData.name);
-  //       localStorage.setItem('process',userData.process)
-  //       login(userData.token, userData.role ,userData.name ,userData.process);
-  //       navigate('/profile');
-  //     } else {
-  //       localStorage.removeItem('token');
-  //       localStorage.removeItem('role');
-  //       localStorage.removeItem('name');
-  //       localStorage.removeItem('process');
-  //       setError(userData.message);
-  //     }
-  //   } catch (error) {
-  //     localStorage.removeItem('token');
-  //     localStorage.removeItem('role');
-  //     localStorage.removeItem('name');
-  //     localStorage.removeItem('process');
-  //     console.log(error);
-  //     setError(userData.message);
-  //     setTimeout(() => {
-  //       setError('');
-  //     }, 5000);
-  //   }
-  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -81,8 +48,6 @@ function LoginPage() {
       const role = localStorage.getItem('role');
       const name = localStorage.getItem('name');
       const process = localStorage.getItem('process');
-
-
       if (token && role && name && process) {
         try {
         

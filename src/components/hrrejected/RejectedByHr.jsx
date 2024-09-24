@@ -5,7 +5,7 @@ import {useUser} from '../auth/UserContext';
 import DataTable from 'react-data-table-component';
 import { AuthContext } from '../auth/AuthContext';
 import { useNavigate,Link } from 'react-router-dom'; 
-
+import NotificationIcon from '../NotificationIcon';
 
   function RejectedByHr ({name}) {
   // const {user} = useUser();
@@ -224,6 +224,7 @@ const updateDateTime = () => {
     <>
     <div class="header">
                 <span class="pe-3">{currentDateTime}</span>
+                <NotificationIcon />
                 <Link class="logout-btn" onClick={handleLogout}><i class="fas fa-power-off"></i></Link>
             </div>
     <div className='container'>
