@@ -13,7 +13,7 @@
   
   .nav-links {
     display: inline-block;
-    padding: 10px 15px 15px ; /* Adjust padding as needed */
+    padding: 5px 5px 5px ; /* Adjust padding as needed */
     text-decoration: none;
     color: #333; /* Default text color */
     border: 1px solid #ccc; /* Button border */
@@ -22,6 +22,7 @@
     transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
     width: 180px; /* Fixed width to ensure consistent button size */
     font-size: 15px;
+    font-family: roboto,sans-serif;
     
   }
   

@@ -1,21 +1,21 @@
-import React, { useState, useEffect,useContext } from 'react'
-import { getlistOfRejectedEmpList, selectInterviewProcess, getEmployeeDetails } from '../services/EmployeeServiceJWT';
+import React, { useState, useEffect, useContext } from 'react'
+import { getlistOfRejectedEmpList, ReInterviewProcess, getEmployeeDetails } from '../services/EmployeeServiceJWT';
 import { getAttendenedInterview } from '../services/InterviewServiceJWT';
 import { format } from 'date-fns';
 import DataTable from 'react-data-table-component';
 import { AuthContext } from '../auth/AuthContext';
-import { useNavigate,Link } from 'react-router-dom'; 
+import { useNavigate, Link } from 'react-router-dom';
 import './RejectedStatusPage.css'
 import UsersService from '../services/UsersService';
 import NotificationIcon from '../NotificationIcon'
 
 
-  function RejectedStatusPage ({name}) {
+function RejectedStatusPage({ name }) {
   // const { user } = useUser();
   const [employees, setEmployees] = useState([]);
   // const [selectedResponse, setSelectedResponse] = useState({});
   const [alertMessage, setAlertMessage] = useState('');
-  const [alertType, setAlertType] = useState(''); 
+  const [alertType, setAlertType] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const [selectedEmployeeDetails, setSelectedEmployeeDetails] = useState('');
@@ -26,7 +26,7 @@ import NotificationIcon from '../NotificationIcon'
   const [itemsPerPage] = useState(10);
   const [selectionError, setSelectionError] = useState(false);
   const { logout } = useContext(AuthContext);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [currentDateTime, setCurrentDateTime] = useState('')
   const [processNames, setProcessNames] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,7 +37,7 @@ import NotificationIcon from '../NotificationIcon'
     updateDateTime();
     const intervalId = setInterval(updateDateTime, 1000); // Update every second
     return () => clearInterval(intervalId);
-  }, [token, filterDate,currentPage]);
+  }, [token, filterDate, currentPage]);
 
 
   const fetchData = () => {
@@ -53,14 +53,6 @@ import NotificationIcon from '../NotificationIcon'
         if (filterDate) {
           filteredEmployees = filteredEmployees.filter(emp => new Date(emp.creationDate).toISOString().slice(0, 10) === filterDate.toISOString().slice(0, 10));
         }
-
-        // filteredEmployees.sort((a, b) => {
-        //   if (sortOrder === 'asc') {
-        //     return new Date(a.creationDate) - new Date(b.creationDate);
-        //   } else {
-        //     return new Date(b.creationDate) - new Date(a.creationDate);
-        //   }
-        // });
         console.log('Response Data:', response.data);
         setEmployees(filteredEmployees);
       }).catch(error => {
@@ -94,17 +86,12 @@ import NotificationIcon from '../NotificationIcon'
     setSelectionError(false);
   };
 
-
   const handleAddInterviewProcess = (employeeId) => {
-    if (isSubmitting) return; // Prevent further submissions while one is in progress
+    if (isSubmitting) return;
 
     const employee = employees.find(emp => emp.id === employeeId);
-    if (!employee.selectedProcess) {
-      setSelectionError(true);
-      return;
-    }
 
-    setIsSubmitting(true); // Set submitting state to true
+    setIsSubmitting(true);
 
     const interviewDate = new Date().toISOString().slice(0, 10);
     const interviewTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -117,31 +104,36 @@ import NotificationIcon from '../NotificationIcon'
       scheduledBy: name
     };
 
-    selectInterviewProcess(employeeId, interviewData)
+    ReInterviewProcess(employeeId, interviewData)
       .then(response => {
         fetchData();
         setAlertMessage("Interview Process assigned successfully");
         setAlertType("success");
         setShowAlert(true);
-        setTimeout(() => {setShowAlert(false);
-        setAlertType('');
-        setAlertMessage('');
-      }, 3000);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertType('');
+          setAlertMessage('');
+        }, 3000);
       })
       .catch(error => {
-        setAlertMessage("Error assigning interview process. Try again");
+        if (error.response && error.response.data) {
+          setAlertMessage(error.response.data);
+        } else {
+          setAlertMessage(error.message); // or error.toString()
+        }
         setAlertType("error");
         setShowAlert(true);
-        setTimeout(() => {setShowAlert(false);
-        setAlertType('');
-        setAlertMessage('');
-      }, 3000);
+        setTimeout(() => {
+          setShowAlert(false);
+          setAlertType('');
+          setAlertMessage('');
+        }, 3000);
       })
       .finally(() => {
-        setIsSubmitting(false); // Reset submitting state
+        setIsSubmitting(false);
       });
   };
-
 
   const showEmployeeDetails = (employeeId) => {
     getEmployeeDetails(employeeId)
@@ -176,34 +168,32 @@ import NotificationIcon from '../NotificationIcon'
     setFilterDate(null);
   };
 
-  // const toggleSortOrder = () => {
-  //   setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  // };
+
 
   const handleLogout = (e) => {
     e.preventDefault(); // Prevent the default anchor behavior
     const confirmLogout = window.confirm('Are you sure you want to logout?');
     if (confirmLogout) {
-        logout();
-        navigate('/');
+      logout();
+      navigate('/');
     }
-};
-const fetchProcessNames = () => {
-  if (!token) {
+  };
+  const fetchProcessNames = () => {
+    if (!token) {
       console.error('Token not found.');
       return;
-  }
-  UsersService.getAllProcessNames(token)
+    }
+    UsersService.getAllProcessNames(token)
       .then(response => {
-          setProcessNames(response); // response.data if the data is wrapped in a `data` property
+        setProcessNames(response);
       })
       .catch(error => {
-          console.error('Error fetching process names:', error);
+        console.error('Error fetching process names:', error);
       });
-};
-const updateDateTime = () => {
-  const now = new Date();
-  const options = {
+  };
+  const updateDateTime = () => {
+    const now = new Date();
+    const options = {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -212,10 +202,10 @@ const updateDateTime = () => {
       minute: '2-digit',
       second: '2-digit',
       hour12: false,
+    };
+    const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
+    setCurrentDateTime(formattedDateTime);
   };
-  const formattedDateTime = new Intl.DateTimeFormat('en-US', options).format(now);
-  setCurrentDateTime(formattedDateTime);
-};
   const columns = [
     {
       name: 'Name',
@@ -249,7 +239,7 @@ const updateDateTime = () => {
       name: 'Register Date',
       selector: row => new Date(row.creationDate).toLocaleDateString(),
     },
-  
+
     {
       name: 'Re-Schedule',
       selector: row => (
@@ -271,24 +261,14 @@ const updateDateTime = () => {
         </select>
       )
     },
-    // {
-    //   name: 'Submit Response',
-    //   cell: row => (
-    //     <button
-    //       className="btn btn-outline-info"
-    //       onClick={() => handleAddInterviewProcess(row.id)}
-    //     >
-    //       Schedule
-    //     </button>
-    //   )
-    // }
+
     {
       name: 'Submit Response',
       cell: row => (
         <button
           className="btn btn-outline-info"
           onClick={() => handleAddInterviewProcess(row.id)}
-          disabled={isSubmitting} // Disable button when submitting
+          disabled={isSubmitting}
         >
           {isSubmitting ? 'Submitting...' : 'Schedule'}
         </button>
@@ -304,16 +284,10 @@ const updateDateTime = () => {
         <Link class="logout-btn" href="#" onClick={handleLogout}><i class="fas fa-power-off"></i></Link>
       </div>
       <div className='container' >
-        <div>
-          {selectionError && <p className="alert alert-danger">Select process first</p>}
+        <br></br>
+        <div className={`alert ${alertType === 'success' ? 'alert-success' : alertType === 'error' ? 'alert-danger' : ''}`} role="alert">
+          {alertMessage}
         </div>
-        {showAlert && (
-          <div className="alert alert-success" role="alert">
-            {alertMessage}
-          </div>
-        )}
-        <br></br>
-        <br></br>
         <div className="row mb-3">
           <div className="col-auto">
             <label htmlFor="filterDate" className="col-form-label">Filter by Date:</label>
@@ -324,11 +298,6 @@ const updateDateTime = () => {
           <div className="col-auto">
             <button className="btn btn-outline-info" onClick={clearFilter}>Clear Filter</button>
           </div>
-          {/* <div className="col-auto">
-            <button className="btn btn-outline-info" onClick={toggleSortOrder}>
-              {sortOrder === 'asc' ? 'Sort Desc' : 'Sort Asc'}
-            </button>
-          </div> */}
         </div>
 
 
@@ -340,7 +309,7 @@ const updateDateTime = () => {
           paginationTotalRows={employees.length}
           onChangePage={page => setCurrentPage(page)}
           onChangeRowsPerPage={rowsPerPage => setCurrentPage(1)}
-      
+
           customStyles={{
             headRow: {
               style: {
@@ -355,8 +324,8 @@ const updateDateTime = () => {
             },
             headCells: {
               style: {
-                color: 'white', // Change text color of header cells
-                fontSize: '11px' // Example: Adjust font size of header cells
+                color: 'white',
+                fontSize: '11px'
               }
             }
           }}
@@ -369,20 +338,6 @@ const updateDateTime = () => {
                   <h5 className="modal-title">Employee Details:</h5>
                 </div>
                 <div className="modal-body">
-                  {/* <p><strong>Full Name:</strong> {selectedEmployeeDetails.fullName}</p>
-                  <p><strong>Email: </strong>{selectedEmployeeDetails.email}</p>
-                  <p><strong>Aadhar Number:</strong>  {selectedEmployeeDetails.aadhaarNumber}</p>
-                  <p><strong>Manager Remarks: </strong>{selectedEmployeeDetails.reMarksByManager}</p>
-                  <hr />
-
-                  {selectedEmployeeDetails.statusHistories && selectedEmployeeDetails.statusHistories.map((history, index) => (
-                    <div key={index}>
-                      <p><strong>Status: </strong><span className="status" data-status={history.status}>{history.status}</span></p>
-                      <p><strong> Updated By: </strong>{history.hrName}</p>
-                      <p><strong>Changes DateTime: </strong>{format(new Date(history.changesDateTime), 'yyyy-MM-dd HH:mm:ss')}</p>
-                      <hr />
-                    </div>
-                  ))} */}
                   <table>
                     <tr>
                       <th>Full Name</th>
@@ -398,28 +353,7 @@ const updateDateTime = () => {
                     </tr>
                   </table>
                   <hr />
-               
-                  {/* {selectedEmployeeDetails.statusHistories && (
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>status</th>
-                          <th>Updated By</th>
-                          <th>Changes Date Time</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {selectedEmployeeDetails.statusHistories.map((history, index) => (
-                          <tr key={index}>
-                            <td><span className="status" data-status={history.status}>{history.status}</span></td>
-                            {history.hrName && <td>{history.hrName}</td>}
-                            <td>{format(new Date(history.changesDateTime), 'yyyy-MM-dd HH:mm:ss')}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )} */}
-                   <table>
+                  <table>
                     <thead>
                       <tr>
                         <th>status</th>

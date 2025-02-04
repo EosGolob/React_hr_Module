@@ -17,6 +17,9 @@ import RejectedByHr from './components/hrrejected/RejectedByHr';
 import ManagerPageOnRoleType from './components/commonManagerPageOnRoleType/ManagerPageOnRoleType';
 import RegistrationPage from './components/auth/RegistrationPage';
 import SearchByName from './components/SearchByName';
+import Dashboard from './components/Dashboard';
+import ReportDownload from './components/ReportDownload';
+import DashBoardContainer from './components/DashBoardContainer';
 function App() {
 
   const { isAuthenticated, role,name,process} = useContext(AuthContext);
@@ -46,6 +49,10 @@ function App() {
                     <Route path='/hrRejectedEmpInfo' element={<RejectedByHr name ={name} />} />
                     <Route path = '/register' element = {<RegistrationPage/>}/>
                     <Route path = '/search' element = {<SearchByName/>}/>
+                    {/* <Route path = '/Dashboard' element={<Dashboard/>}/> */}
+                    <Route path = '/Dashboard' element={<DashBoardContainer/>}/>
+                    <Route path = '/report' element = {<ReportDownload/>}/>
+                    
                   </>
                 )}
                 {

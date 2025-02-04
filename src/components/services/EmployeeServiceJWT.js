@@ -11,6 +11,10 @@ const empIntScheduleEndpoint = 'employees-schedule-interview';
 const hrRejectEmployeEndPoint = 'hrRejectedEmpDetails';
 const processNameEndpoint = 'admin/get-process-name';
 const searchByNameAPI ='searchByNameAPI';
+const reportEndpoint = '/reportData'; 
+const seqReportEndPoint ='/export';
+
+
 const axiosInstance = axios.create({
     baseURL: REST_API_BASE_URL,
   })
@@ -44,6 +48,17 @@ const axiosInstance = axios.create({
       },
     });
   };
+
+  export const ReInterviewProcess = (employeeId, interviewData) => {
+    const token = localStorage.getItem('token');
+    return axiosInstance.post(`${REST_API_BASE_URL}/${employeeId}/reinterview-process`, interviewData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  };
+
   export const getlistOfEmpIntSchedule = () => {
     return axiosInstance.get(`/${empIntScheduleEndpoint}`, authConfig());
   };
@@ -115,4 +130,28 @@ const axiosInstance = axios.create({
       userName:userName
     };
     return axios.put(url, data, authConfig());
+  };
+
+
+  export const downloadEmployeeReport = (startDate, endDate) => {
+    return axiosInstance.get(reportEndpoint, {
+      params: {
+        startDate,
+        endDate,
+      },
+      responseType: 'arraybuffer', // Important to handle binary data like Excel files
+      ...authConfig(), // Include the token in the request headers
+    });
+  };
+
+
+  export const downloadSequentialEmployeeReport = (startDate, endDate) => {
+    return axiosInstance.get(seqReportEndPoint,{
+      params: {
+        startDate,
+        endDate,
+      },
+      responseType: 'arraybuffer',
+      ...authConfig(),
+    });
   };

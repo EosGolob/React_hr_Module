@@ -1,0 +1,145 @@
+.filter-container {
+  margin-bottom: 20px;
+}
+
+.filter-container label {
+  margin-right: 5px;
+  font-weight: bold;
+}
+
+.filter-container select {
+  padding: 0px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 25px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.card h3 {
+  font-size: 18px;
+  color: #333;
+  font-weight: bold;
+}
+
+.card p {
+  font-size: 25px;
+  color: #666666;
+}
+
+.dashboard-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  margin: 40px auto;
+  border: 5px solid #1C3657;
+}
+
+.select-filter {
+  display: flex;
+  gap: 5px;
+  justify-content: space-between;
+}
+
+.select-filter select {
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 9px;
+  flex-grow: 1;
+}
+
+.select-filter-source select {
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 12px;
+}
+
+.card-inp {
+  padding: 5px 5px;
+  border-radius: 5px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  font-size: 12px;
+  margin-top: 20px;
+}
+
+.select-filter-year {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.select-filter-year input {
+  width: 150px;
+  font-size: 9px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.select-filter-year select {
+  width: 180px;
+  padding: 10px;
+  font-size: 9px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.source-sel {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 4px;
+  font-size: 16px;
+  color: #333;
+  margin-left: -10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

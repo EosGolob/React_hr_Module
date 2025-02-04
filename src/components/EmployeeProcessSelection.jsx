@@ -32,7 +32,80 @@ function EmployeeProcessSelection({ name }) {
   const [processNames, setProcessNames] = useState([]);
 
   const [alert, setAlert] = useState({ message: '', type: '' });
-
+  
+  const jobTitles = [
+    "CUSTOMER CARE EXECUTIVE",
+    "CUSTOMER SERVICE REPRESENTATIVE",
+    "ANALYSIS EXECUTIVE",
+    "SENIOR CUSTOMER SERVICE REPRESENTATIVE",
+    "SENIOR CUSTOMER CARE EXECUTIVE",
+    "BILL DESK CO-ORDINATOR",
+    "APPRENTICE - CUSTOMER CONTACT ASSISTANT",
+    "RETAIL SALES ASSOCIATE",
+    "SENIOR RETAIL SALES ASSOCIATE",
+    "FLOOR COACH",
+    "SR.CUSTOMER SERVICE REPRESENTATIVE",
+    "CUSTOMER SUPPORT REPRESENTATIVE",
+    "CUSTOMER SERVICE EXECUTIVE",
+    "APPRENTICE-CUSTOMER CONTACT ASSISTANT",
+    "SR. CUSTOMER SERVICE EXECUTIVE",
+    "TR. SQL DEVELOPER",
+    "SR. CUSTOMER SUPPORT REPRESENTATIVE",
+    "SUBJECT MATTER EXPERT",
+    "SENIOR ACCOUNTS EXECUTIVE",
+    "ENGINEER",
+    "ACCOUNTS EXECUTIVE FOR EMERSON PROJECT",
+    "ACCOUNT EXECUTIVE",
+    "CUSTOMER CARE ASSOCIATE",
+    "QUALITY EXECUTIVE",
+    "EXPORT CO-ORDINATOR",
+    "ACCOUNTS EXECUTIVE-OPERATIONS",
+    "ENGINEER RAC",
+    "DIGITAL RELATIONSHIP MANAGER",
+    "SOFTWARE TEST ENGINEER",
+    "QUALITY ANALYST",
+    "COORDINATOR",
+    "TECHNICAL HELPDESK",
+    "SR.DIGITAL RELATIONSHIP MANAGER",
+    "QUALITY AND TRAINING- EXECUTIVE",
+    "CREDIT CONTROL ASSISTANT",
+    "BACK OFFICE EXECUTIVE",
+    "MIS EXECUTIVE",
+    "APPRENTICE-CUSTOMER CARE ASSOCIATE",
+    "ASSISTANT MANAGER - OPERATIONS",
+    "OFFICE ASSISTANT",
+    "SOFTWARE DEVELOPER",
+    "MECHANICAL DRAUGHTSMAN",
+    "SR. MIS EXECUTIVE",
+    "SR. MIS EXECUTIVE-OPERATIONS",
+    "SR. QUALITY EXECUTIVE",
+    "TEAM LEADER-OPERATIONS",
+    "QUALITY AUDITOR",
+    "Sr. PURCHASE EXECUTIVE",
+    "OFFICE ASSISTANT - FRONT OFFICE DESK",
+    "EXECUTIVE",
+    "CUSTOMER RELATIONSHIP OFFICER",
+    "Sr. CUSTOMER CARE EXECUTIVE",
+    "TRAINER",
+    "APPRENTICE- CUSTOMER CARE ASSOCIATE",
+    "BUSINESS ANALYST",
+    "DIGITAL MARKETING EXECUTIVE",
+    "DATA EXECUTIVE",
+    "CLIENT SERVICE RM",
+    "Senior Software Developer",
+    "SQL DEVELOPER",
+    "PROCESS ASSOCIATE",
+    "Sr. QUALITY ANALYST",
+    "DIGITAL ACQUISITION SPECIALIST",
+    "EXECUTIVE-ACCOUNTS RECEIVABLES",
+    "DOT NET DEVELOPER",
+    "CONSULTANT",
+    "INTERN-CUSTOMER CARE EXECUTIVE",
+    "FIELD SALES ASSOCIATES",
+    "L1 TECHNICAL SUPPORT",
+    "PRINCIPAL SOFTWARE ENGINEER"
+  ];
+  
   useEffect(() => {
 
     if (!token) {
@@ -98,7 +171,16 @@ function EmployeeProcessSelection({ name }) {
       }));
     setSelectionError(false);
   };
-
+  const handleJobProfileChange = (e, employeeId) => {
+    const selectedJobProfile = e.target.value;
+    setEmployees(prevEmployees =>
+      prevEmployees.map(employee => {
+        if (employee.id === employeeId) {
+          return { ...employee, selectedJobProfile: selectedJobProfile };
+        }
+        return employee;
+      }));
+  };
 
   const handleAddInterviewProcess = (employeeId) => {
     const employee = employees.find(emp => emp.id === employeeId);
@@ -114,6 +196,7 @@ function EmployeeProcessSelection({ name }) {
       interviewDate: interviewDate,
       interviewTime: interviewTime,
       status: "Scheduled",
+      jobProfile: employee.selectedJobProfile,
       // scheduledBy: user ? user.name : 'Unknown',
       scheduledBy: name,
       remarks: remarks[employeeId] || ''
@@ -257,10 +340,10 @@ function EmployeeProcessSelection({ name }) {
       name: 'Email',
       selector: row => row.email
     },
-    {
-      name: 'Applied For Job Profile',
-      selector: row => row.jobProfile
-    },
+    // {
+    //   name: 'Applied For Job Profile',
+    //   selector: row => row.jobProfile
+    // },
     {
       name: 'Mobile No',
       selector: row => row.mobileNo
@@ -301,6 +384,25 @@ function EmployeeProcessSelection({ name }) {
           <option value="" disabled>Select</option>
           {processNames.map((process, index) => (
             <option key={index} value={process}>{process}</option>
+          ))}
+        </select>
+      )
+    },
+    {
+      name: 'Job Profile',
+      selector: row => row.selectedJobProfile || 'Not selected',
+      cell: (row) => (
+        <select  className='form-select'
+        style={{
+                  padding: "10px 15px",
+                  fontSize: "14px",
+                  height: "40px",
+                  width: "100px"
+                }}
+        onChange={(e) => handleJobProfileChange(e, row.id)} value={row.selectedJobProfile || ''}>
+          <option value="">Select Job Profile</option>
+          {jobTitles.map((jobTitle, index) => (
+            <option key={index} value={jobTitle}>{jobTitle}</option>
           ))}
         </select>
       )

@@ -209,11 +209,11 @@ function HrInterviewResponse({ role, name }) {
       sortable: true,
 
     },
-    {
-      name: 'Applied for',
-      selector: row => row.jobProfile,
+    // {
+    //   name: 'Applied for',
+    //   selector: row => row.jobProfile,
 
-    },
+    // },
     {
       name: 'Mobile No',
       selector: row => row.mobileNo,

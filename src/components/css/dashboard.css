@@ -1,0 +1,41 @@
+/* App.css */
+.dashboard {
+    padding: 20px;
+    background-color: #f4f7fb;
+  }
+  
+  h1 {
+    text-align: center;
+  }
+  
+  .metrics {
+    display: flex;
+    justify-content: space-between;
+
+  }
+  
+  .metric {
+    width: 15%;
+    text-align: center;
+    background-color:white;
+    margin-left: 50px;
+    margin-right: 50px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border: 1px solid #eae6e6; 
+    padding-top: 5px; 
+  }
+  
+  .charts {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .chart {
+    width: 48%;
+    margin-bottom: 20px;
+  }
+  

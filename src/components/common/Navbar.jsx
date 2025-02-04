@@ -71,6 +71,16 @@ function Navbar() {
 
             </li>
             }
+             {role === 'ADMIN' &&
+            <li className={`nav-items ${location.pathname === '/dashboard' ? 'active' : ''}`}>
+              <Link to="/dashboard" className="nav-links"><span className="icons">📊</span>Dash Board</Link>
+            </li>
+            }
+             {role === 'ADMIN' &&
+            <li className={`nav-items ${location.pathname === '/report' ? 'active' : ''}`}>
+              <Link to="/report" className="nav-links"><span className="icons">⬇️</span>Report Download</Link>
+            </li>
+            }
           {role === 'Manager' &&
             <li className={`nav-items ${location.pathname === '/rolemrpage' ? 'active' : ''}`}>
               <Link to="/rolemrpage" className="nav-links" ><span className="icons">🗓️</span> Scheduled Interview</Link>
